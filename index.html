@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#23408e">
+<meta name="description" content="Luyện SPI: 300 câu toán, tiếng Anh, 構造的把握力, 組問題 và thi thử bấm giờ.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ôn SPI">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Ôn SPI Fast Retailing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Zen+Kaku+Gothic+New:wght@500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: một "màn hình thi" ở giữa — thanh lọc trên cùng, thẻ câu hỏi kiểu trang SPI (dải xám tiêu đề, khung đề), vùng trả lời bên dưới */
+:root {
+  --bg: #eef0f3;
+  --sheet: #ffffff;
+  --band: #dfe2e7;
+  --ink: #1d2433;
+  --muted: #5c6577;
+  --line: #c9ced8;
+  --accent: #23408e;
+  --accent-ink: #ffffff;
+  --mark: #fff1a8;
+  --ok: #1d7a4a;
+  --bad: #b3362b;
+  --f-body: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --f-jp: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151c; --sheet: #1b2029; --band: #262c38; --ink: #e6e9ef; --muted: #9aa3b5;
+    --line: #353d4c; --accent: #8fa8ff; --accent-ink: #10162a; --mark: #5a4d12; --ok: #5fcf92; --bad: #ff8a7d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151c; --sheet: #1b2029; --band: #262c38; --ink: #e6e9ef; --muted: #9aa3b5;
+  --line: #353d4c; --accent: #8fa8ff; --accent-ink: #10162a; --mark: #5a4d12; --ok: #5fcf92; --bad: #ff8a7d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 16px; }
+h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: .01em; text-wrap: balance; }
+.score { font-family: var(--f-mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.score b { color: var(--ink); font-weight: 500; }
+
+.filters { display: flex; flex-direction: column; gap: 8px; }
+.row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.row .lbl { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; min-width: 64px; }
+.chip {
+  font: inherit; font-size: 13px; padding: 4px 11px; border-radius: 3px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--sheet); color: var(--ink);
+}
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tools { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 13px; color: var(--muted); }
+.tools label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+
+.sheet { background: var(--sheet); border: 1px solid var(--line); }
+.band {
+  background: var(--band); padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 4px 12px;
+  justify-content: space-between; align-items: center; font-size: 13px;
+}
+.band .sec { font-family: var(--f-jp); font-weight: 700; font-size: 14px; }
+.band .meta { color: var(--muted); font-family: var(--f-mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.lv { display: inline-block; font-size: 11px; padding: 1px 7px; border: 1px solid var(--line); border-radius: 2px; margin-left: 6px; font-family: var(--f-body); font-weight: 500; }
+.body { padding: 18px 16px 20px; display: flex; flex-direction: column; gap: 16px; }
+.qtitle { font-size: 13px; color: var(--muted); }
+.q { font-family: var(--f-jp); font-size: 16px; line-height: 1.85; white-space: pre-line; overflow-wrap: anywhere; }
+.q.en { font-family: var(--f-body); }
+.timer { font-family: var(--f-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.timer.low { color: var(--bad); }
+
+.answer { display: flex; flex-direction: column; gap: 8px; }
+.answer label { font-size: 13px; color: var(--muted); }
+textarea {
+  font: inherit; font-size: 15px; width: 100%; min-height: 64px; resize: vertical; padding: 10px 12px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 3px;
+}
+.btns { display: flex; flex-wrap: wrap; gap: 8px; }
+button.main, button.sub {
+  font: inherit; font-size: 14px; font-weight: 600; padding: 8px 16px; border-radius: 3px; cursor: pointer;
+}
+button.main { background: var(--accent); color: var(--accent-ink); border: 1px solid var(--accent); }
+button.main:disabled { opacity: .45; cursor: not-allowed; }
+button.sub { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+.hint { font-size: 12px; color: var(--muted); }
+
+.reveal { border-top: 1px dashed var(--line); padding-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+.yours { font-size: 13px; color: var(--muted); white-space: pre-line; overflow-wrap: anywhere; }
+.ans { font-size: 16px; font-weight: 600; white-space: pre-line; }
+.ans span { background: var(--mark); padding: 1px 4px; }
+.block h3 { margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+.block p { margin: 0; white-space: pre-line; overflow-wrap: anywhere; }
+.selfmark { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.selfmark span { font-size: 13px; color: var(--muted); }
+button.ok { border-color: var(--ok); color: var(--ok); }
+button.bad { border-color: var(--bad); color: var(--bad); }
+button.ok[aria-pressed="true"] { background: var(--ok); color: var(--sheet); }
+button.bad[aria-pressed="true"] { background: var(--bad); color: var(--sheet); }
+
+nav { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dots { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; min-width: 0; justify-content: center; }
+.dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--line); background: transparent; padding: 0; cursor: pointer; }
+.dot.cur { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.dot.ok { background: var(--ok); border-color: var(--ok); }
+.dot.bad { background: var(--bad); border-color: var(--bad); }
+.empty { padding: 28px 16px; text-align: center; color: var(--muted); }
+.tabs { display: flex; gap: 0; border-bottom: 2px solid var(--ink); }
+.tab {
+  font: inherit; font-size: 14px; font-weight: 600; padding: 8px 18px; cursor: pointer;
+  background: transparent; color: var(--muted); border: 1px solid transparent; border-bottom: none; margin-bottom: -2px;
+}
+.tab[aria-selected="true"] { background: var(--sheet); color: var(--ink); border-color: var(--ink); border-bottom: 2px solid var(--sheet); }
+.bar { height: 4px; background: var(--band); }
+.bar > i { display: block; height: 100%; background: var(--accent); transition: width .3s linear; }
+.bar.time > i { background: var(--ink); }
+.bar.time.low > i { background: var(--bad); }
+.setup { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+select { font: inherit; padding: 7px 10px; border: 1px solid var(--line); border-radius: 3px; background: var(--bg); color: var(--ink); }
+.note { font-size: 13px; color: var(--muted); margin: 0; }
+.bigtimer { font-family: var(--f-mono); font-size: 22px; font-variant-numeric: tabular-nums; }
+.bigtimer.low { color: var(--bad); }
+.sum { display: flex; flex-wrap: wrap; gap: 8px 28px; align-items: baseline; }
+.sum .big { font-family: var(--f-mono); font-size: 34px; font-variant-numeric: tabular-nums; line-height: 1; }
+.sum .big small { font-size: 16px; color: var(--muted); }
+.tbl-wrap { overflow-x: auto; }
+table.res { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+table.res th, table.res td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.res th { color: var(--muted); font-weight: 500; font-size: 12px; }
+.items { display: flex; flex-direction: column; }
+.item { padding: 14px 0; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+.item .head { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 13px; }
+.item .head b { font-family: var(--f-jp); }
+.item .state { font-size: 12px; font-weight: 600; }
+.item .state.ok { color: var(--ok); } .item .state.bad { color: var(--bad); } .item .state.none { color: var(--muted); }
+.item details summary { cursor: pointer; font-size: 13px; color: var(--accent); }
+.item details .q { margin-top: 6px; font-size: 14px; }
+.item .line { font-size: 14px; white-space: pre-line; overflow-wrap: anywhere; }
+.item .line em { font-style: normal; color: var(--muted); }
+@media (prefers-reduced-motion: no-preference) { .reveal { animation: in .18s ease-out; } @keyframes in { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } } }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Ôn SPI – Fast Retailing</h1>
+    <div class="score" id="score"></div>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" type="button" data-m="practice" aria-selected="true">Luyện tập</button>
+    <button class="tab" role="tab" type="button" data-m="exam" aria-selected="false">Thi thử</button>
+  </div>
+
+  <div class="filters" id="filtersBox">
+    <div class="row" id="secRow"><span class="lbl">Phần</span></div>
+    <div class="row" id="lvRow"><span class="lbl">Mức</span></div>
+    <div class="tools" id="practiceTools">
+      <label><input type="checkbox" id="optTimer"> Bấm giờ 60 giây</label>
+      <label><input type="checkbox" id="optShuffle"> Xáo trộn</label>
+      <label><input type="checkbox" id="optWrong"> Chỉ câu đã sai</label>
+      <button class="sub" id="resetBtn" type="button" style="padding:4px 10px;font-size:12px">Xoá kết quả</button>
+    </div>
+  </div>
+
+  <section class="sheet" id="card"></section>
+
+  <nav>
+    <button class="sub" id="prevBtn" type="button">← Câu trước</button>
+    <div class="dots" id="dots"></div>
+    <button class="sub" id="nextBtn" type="button">Câu sau →</button>
+  </nav>
+</div>
+
+<script>
+const SECS = {
+  math: "非言語（toán）",
+  eng: "英語（tiếng Anh）",
+  kozo: "構造的把握力",
+  kumi: "組問題",
+  kaki: "英語 書き換え"
+};
+const LVS = { 1: "Cơ bản", 2: "Trung bình", 3: "Khó" };
+const KZ = "\n\nA アとイ　B アとウ　C アとエ　D イとウ　E イとエ　F ウとエ";
+
+const Q = [
+// ===== Toán – cơ bản =====
+{sec:"math",lv:1,t:"割合（増減）",q:"ある店のTシャツの販売数は先月120枚だった。今月は先月より15%増えた。今月の販売数は何枚か。",a:"138枚",ex:"10% của 120 là 12, 5% là 6 → 120 + 18."},
+{sec:"math",lv:1,t:"割合（内訳）",q:"ある日の来店客のうち40%が男性で、男性のうち25%が学生だった。男性の学生は来店客全体の何%か。",a:"10%",ex:"0.4 × 0.25 = 0.1 (¼ của 40)."},
+{sec:"math",lv:1,t:"損益算",q:"原価2,000円の商品に3割の利益を見込んで定価をつけたが、定価の2割引きで売った。利益はいくらか。",a:"80円",ex:"定価 2,600 → 売価 2,080 → 2,080 − 2,000.",tip:"1.3 × 0.8 = 1.04 → lãi 4% của 2,000."},
+{sec:"math",lv:1,t:"割引料金",q:"入場料は1人800円。団体は10人を超えた分が1人2割引きになる。15人の合計はいくらか。",a:"11,200円",ex:"10 × 800 = 8,000; 5 × 640 = 3,200."},
+{sec:"math",lv:1,t:"分割払い",q:"商品を購入し、頭金として総額の1/4を払い、残りを6回の均等払いにした。1回の支払額は総額の何分の何か。",a:"1/8",ex:"¾ ÷ 6 = 3/24 = 1/8.",tip:"Luôn coi tổng là 1, không đặt số tiền."},
+{sec:"math",lv:1,t:"仕事算",q:"Aは12日、Bは6日で終える仕事がある。2人で一緒に行うと何日で終わるか。",a:"4日",ex:"Đặt tổng việc = 12 (BCNN): A làm 1/ngày, B làm 2/ngày → 12 ÷ 3."},
+{sec:"math",lv:1,t:"速さ",q:"時速4.8kmで歩く人が1.2kmを歩くと何分かかるか。",a:"15分",ex:"1.2 là ¼ của 4.8 → ¼ giờ."},
+{sec:"math",lv:1,t:"濃度",q:"8%の食塩水200gに水を40g加えると、濃度は約何%になるか。",a:"約6.7%",ex:"Muối 16g giữ nguyên, dung dịch thành 240g → 16/240 = 1/15."},
+{sec:"math",lv:1,t:"集合",q:"100人に調査したところ、ユニクロを利用する人は60人、GUを利用する人は45人、両方を利用する人は20人だった。どちらも利用しない人は何人か。",a:"15人",ex:"60 + 45 − 20 = 85 → 100 − 85."},
+{sec:"math",lv:1,t:"確率",q:"サイコロを2個投げるとき、目の和が8になる確率はいくらか。",a:"5/36",ex:"(2,6)(3,5)(4,4)(5,3)(6,2)."},
+{sec:"math",lv:1,t:"場合の数",q:"6人の中から3人の代表を選ぶ方法は何通りか。\n（応用：店長・副店長を1人ずつ選ぶ場合は？）",a:"20通り／応用 30通り",ex:"6×5×4 ÷ 3×2×1 = 20. Ứng dụng: 6×5 = 30, vì có phân biệt vai trò nên không chia."},
+{sec:"math",lv:1,t:"代金精算",q:"A、B、Cの3人で食事をし、Aが9,000円、Bが3,000円を支払い、Cは払っていない。3人が同額を負担するにはどう精算すればよいか。",a:"C→A 4,000円、B→A 1,000円",ex:"Mỗi người 12,000 ÷ 3 = 4,000."},
+{sec:"math",lv:1,t:"推論（順序）",q:"P、Q、R、Sの4店舗を売上順に並べた。\n①RはPより上位　②PはQより上位　③Sは最下位ではない\n確実に言えるものはどれか。\nA：Rは1位　B：Qは4位　C：Sは2位",a:"B",ex:"R > P > Q và S không cuối → Q chắc chắn hạng 4; S có thể đứng 1, 2 hoặc 3."},
+{sec:"math",lv:1,t:"推論（正誤）",q:"「この店の社員は全員英語を話せる」が正しいとき、必ず正しいのはどれか。\nア：英語を話せない人はこの店の社員ではない\nイ：英語を話せる人はこの店の社員である",a:"アだけ",ex:"ア là 対偶 (luôn đúng). イ là 逆, không chắc đúng."},
+{sec:"math",lv:1,t:"表の読み取り",q:"ある店舗の今年の売上は3,000万円で、前年比120%だった。前年の売上はいくらか。",a:"2,500万円",ex:"3,000 ÷ 1.2 = 3,000 × 5/6.",tip:"Bẫy: lấy 3,000 × 0.8 = 2,400 là sai."},
+// ===== Tiếng Anh – cơ bản =====
+{sec:"eng",lv:1,t:"同意語",q:"Choose the word closest in meaning to PURCHASE.\n(A) sell (B) buy (C) borrow (D) return (E) order",a:"(B) buy",ex:"purchase = mua."},
+{sec:"eng",lv:1,t:"反意語",q:"Choose the word opposite in meaning to EXPAND.\n(A) enlarge (B) extend (C) shrink (D) spread (E) grow",a:"(C) shrink",ex:"expand = mở rộng ↔ shrink = co lại."},
+{sec:"eng",lv:1,t:"英英辞書",q:"Which word fits this definition: \"a person who buys goods or services from a shop or business\"?\n(A) supplier (B) customer (C) employee (D) retailer (E) competitor",a:"(B) customer",ex:"Người mua hàng = customer."},
+{sec:"eng",lv:1,t:"空欄補充",q:"The store will be closed ( ) the renovation.\n(A) while (B) during (C) since (D) until",a:"(B) during",ex:"Theo sau là danh từ → during; while cần mệnh đề."},
+{sec:"eng",lv:1,t:"誤文訂正",q:"She (A) has worked (B) at this store (C) since (D) three years.\nWhich part is incorrect?",a:"(D) → for three years",ex:"since + mốc thời gian, for + khoảng thời gian."},
+{sec:"eng",lv:1,t:"和文英訳",q:"「その商品の在庫が少なくなっている。」に最も近いものはどれか。\n(A) We are running out of stock of that item.\n(B) We are running over stock of that item.\n(C) That item is out of order.",a:"(A)",ex:"(C) là bẫy: out of order = hỏng."},
+{sec:"eng",lv:1,t:"並べ替え",q:"Put the words in order:\n[ sold out / the / is / already / item ]",a:"The item is already sold out.",ex:"already đứng sau be."},
+{sec:"eng",lv:1,t:"長文読解（短文）",q:"Many clothing retailers now use RFID tags. Each tag lets a self-checkout machine read every item in a basket at once. As a result, customers wait less, and staff spend more time helping shoppers on the floor.\n\nWhat is one effect of RFID tags mentioned in the passage?\n(A) Prices become lower.\n(B) Customers wait less at checkout.\n(C) Stores need more cashiers.",a:"(B)",ex:"Đoạn văn không nhắc tới giá (A), và (C) ngược ý."},
+// ===== Toán – trung bình =====
+{sec:"math",lv:2,t:"割合（増減）",q:"ある商品を先月10%値上げし、今月その価格から10%値下げした。元の価格と比べてどうなったか。",a:"1%安い",ex:"1.1 × 0.9 = 0.99.",tip:"Tăng a% rồi giảm a% luôn thấp hơn gốc đúng a²/100 % → loại ngay đáp án 変わらない."},
+{sec:"math",lv:2,t:"割合（内訳）",q:"来店客の60%が女性。女性の30%、男性の20%が会員である。会員は来店客全体の何%か。",a:"26%",ex:"0.6×0.3 + 0.4×0.2 = 0.18 + 0.08.",tip:"Trung bình có trọng số của 30% và 20%, nghiêng về nhóm đông hơn (nữ) → khoảng 25–30%."},
+{sec:"math",lv:2,t:"損益算",q:"定価の25%引きで売っても原価の20%の利益が出るようにしたい。定価は原価の何倍にすればよいか。",a:"1.6倍",ex:"0.75x = 1.2.",tip:"Định giá = (1 + lãi) ÷ (1 − giảm). ÷0.75 = ×4/3."},
+{sec:"math",lv:2,t:"割引料金",q:"入場料は1人1,200円。20人を超えた分は1割引き、40人を超えた分は2割引き。50人の合計はいくらか。",a:"55,200円",ex:"20×1,200 + 20×1,080 + 10×960 = 24,000 + 21,600 + 9,600.",tip:"Giới hạn trên 60,000, dưới 48,000; người giá gốc nhiều nhất nên kết quả gần mốc trên."},
+{sec:"math",lv:2,t:"分割払い",q:"購入時に総額の1/5を払い、引き渡し時に残額の1/4を払った。残りを5回の均等払いにすると1回分は総額の何分の何か。",a:"3/25",ex:"Còn 4/5 → trả ¼ của 4/5 = 1/5 → còn 3/5 → ÷5.",tip:"残額の luôn nhân trên phần còn lại, không phải tổng."},
+{sec:"math",lv:2,t:"仕事算",q:"AとBの2人で行うと10日、Aだけで行うと15日かかる仕事がある。Bだけで行うと何日かかるか。",a:"30日",ex:"Tổng = 30: hai người 3/ngày, A 2/ngày → B 1/ngày.",tip:"Làm một mình luôn lâu hơn hai người cùng làm; B chậm hơn A nên > 15 ngày."},
+{sec:"math",lv:2,t:"速さ（平均速度）",q:"同じ道を、行きは時速6km、帰りは時速4kmで往復した。往復の平均時速は何kmか。",a:"4.8km",ex:"2 × 6 × 4 ÷ (6 + 4).",tip:"Luôn nhỏ hơn trung bình cộng (5) → loại 5."},
+{sec:"math",lv:2,t:"濃度（混合）",q:"10%の食塩水300gと4%の食塩水200gを混ぜると何%になるか。",a:"7.6%",ex:"(30 + 8) ÷ 500.",tip:"てんびん: khối lượng 3:2 → khoảng cách 2:3 → 4 + 6×3/5 = 7.6; chắc chắn > 7."},
+{sec:"math",lv:2,t:"集合",q:"120人のうち、商品Aを買った人70人、Bを買った人50人、どちらも買っていない人25人。両方買った人は何人か。",a:"25人",ex:"Mua ít nhất 1 = 95 → 70 + 50 − 95.",tip:"Đáp án ≤ nhóm nhỏ hơn (50)."},
+{sec:"math",lv:2,t:"確率（余事象）",q:"当たり3本を含む10本のくじから2本引く。少なくとも1本当たる確率はいくらか。",a:"8/15",ex:"1 − (7/10 × 6/9) = 1 − 7/15.",tip:"Thấy 少なくとも → 1 − (không trúng lần nào)."},
+{sec:"math",lv:2,t:"場合の数（余事象）",q:"男子4人、女子3人から3人を選ぶ。女子を少なくとも1人含む選び方は何通りか。",a:"31通り",ex:"₇C₃ = 35, chỉ nam ₄C₃ = 4 → 35 − 4.",tip:"Thuộc sẵn ₅C₂=10, ₆C₃=20, ₇C₃=35, ₈C₃=56."},
+{sec:"math",lv:2,t:"代金精算",q:"A、B、Cの3人で旅行し、Aが宿泊費36,000円、Bが交通費18,000円、Cが食事代6,000円を払った。均等に負担するにはどう精算するか。",a:"C→A 14,000円、B→A 2,000円",ex:"Mỗi người 20,000.",tip:"Chênh lệch so với trung bình: A +16,000, B −2,000, C −14,000; tổng phải bằng 0."},
+{sec:"math",lv:2,t:"推論（順序）",q:"A〜Eの5人が到着した。Eは2番目、AはBのすぐ後、CはAより先、DはEより後だった。確実に言えるのはどれか。\nア：Cは1番目　イ：Aは4番目　ウ：Dは最後",a:"ア",ex:"Hai khả năng: C E B A D hoặc C E D B A → chỉ C cố định ở vị trí 1.",tip:"Đặt thông tin tuyệt đối (E = 2) trước, rồi cặp dính liền (BA)."},
+{sec:"math",lv:2,t:"推論（正誤）",q:"P、Q、R、Sの身長について、PはQより高く、QはSより高く、SはRより高い。必ず正しいのはどれか。\nア：PはRより高い　イ：Qが2番目に高い",a:"アもイも正しい",ex:"P > Q > S > R.",tip:"Chuỗi bất đẳng thức nối liền thành một hàng → mọi so sánh đều chắc chắn."},
+{sec:"math",lv:2,t:"表の読み取り",q:"店舗Xの売上は4,000万円（衣料60%、雑貨40%）、店舗Yは6,000万円（衣料50%、雑貨50%）。2店舗合計で衣料の割合は何%か。",a:"54%",ex:"(2,400 + 3,000) ÷ 10,000.",tip:"Trung bình có trọng số của 60 và 50, nghiêng về Y → dưới 55%."},
+// ===== Tiếng Anh – trung bình =====
+{sec:"eng",lv:2,t:"同意語",q:"Closest in meaning to RELUCTANT:\n(A) eager (B) unwilling (C) ready (D) curious (E) careful",a:"(B) unwilling",ex:"reluctant = miễn cưỡng.",tip:"Đặt vào cụm quen (\"reluctant to accept\") rồi thử thay từng đáp án."},
+{sec:"eng",lv:2,t:"反意語",q:"Opposite in meaning to ABUNDANT:\n(A) plentiful (B) scarce (C) ample (D) rich (E) huge",a:"(B) scarce",ex:"abundant = dồi dào ↔ scarce = khan hiếm.",tip:"Khi 4 đáp án đồng nghĩa nhau, chọn từ lạc loài."},
+{sec:"eng",lv:2,t:"英英辞書",q:"\"to make pain or a problem less severe\"\n(A) aggravate (B) alleviate (C) elevate (D) eliminate (E) illustrate",a:"(B) alleviate",ex:"alleviate = làm dịu bớt.",tip:"Định nghĩa nói \"less\", không phải \"remove\" → loại eliminate; aggravate là nghĩa ngược."},
+{sec:"eng",lv:2,t:"空欄補充",q:"If I ( ) about the sale earlier, I would have bought it.\n(A) knew (B) had known (C) have known (D) would know",a:"(B) had known",ex:"Câu điều kiện loại 3.",tip:"Vế sau có would have + p.p. → vế if là had + p.p."},
+{sec:"eng",lv:2,t:"誤文訂正",q:"The number of (A) customers (B) visiting the store (C) have (D) increased.",a:"(C) → has",ex:"The number of + động từ số ít.",tip:"A number of đi với số nhiều."},
+{sec:"eng",lv:2,t:"和文英訳",q:"「彼女は来月までにその報告書を仕上げなければならない。」\n(A) She has to finish the report by next month.\n(B) She has to finish the report until next month.\n(C) She must have finished the report next month.",a:"(A)",ex:"〜までに (hạn chót) = by; 〜まで (kéo dài) = until."},
+{sec:"eng",lv:2,t:"並べ替え",q:"[ know / I / where / don't / the store / is ]",a:"I don't know where the store is.",ex:"Câu hỏi gián tiếp: sau từ để hỏi là S + V, không đảo."},
+{sec:"eng",lv:2,t:"長文読解",q:"Some apparel companies now collect used clothes in their stores. Items in good condition are sent to people in need, and the rest are recycled into new materials. The programs also bring customers back to the store.\n\nWhich is TRUE according to the passage?\n(A) All collected clothes are recycled.\n(B) The programs can increase store visits.\n(C) Customers receive money for used clothes.",a:"(B)",ex:"\"bring customers back to the store\".",tip:"Đáp án có all/always/never thường sai; đáp án nói điều bài không nhắc cũng sai."},
+// ===== Toán – khó =====
+{sec:"math",lv:3,t:"割合（元に戻す）",q:"商品の価格を20%値上げした。元の価格に戻すには、値上げ後の価格から約何%値下げすればよいか。",a:"約16.7%",ex:"1 ÷ 1.2 = 5/6 → giảm 1/6.",tip:"Giảm để về gốc luôn nhỏ hơn mức đã tăng → loại 20%."},
+{sec:"math",lv:3,t:"割合（内訳）",q:"あるクラスの男女比は3:2。男子の40%、女子の60%が自転車通学である。自転車通学者のうち女子は何%か。",a:"50%",ex:"Nam 3×0.4 = 1.2, nữ 2×0.6 = 1.2.",tip:"Đặt 30 nam, 20 nữ → 12 và 12. Bẫy: chọn 60%."},
+{sec:"math",lv:3,t:"損益算",q:"原価の4割増しで定価をつけた。原価の5%以上の利益を確保するには、定価の何割引きまでできるか。",a:"2割5分引きまで",ex:"1.4 × (1 − x) ≥ 1.05 → 1 − x ≥ 0.75.",tip:"1.05 ÷ 1.4 = 3/4. Thử đáp án: 1.4 × 0.75 = 1.05."},
+{sec:"math",lv:3,t:"割勘（人数変化）",q:"バスの貸切料金50,000円を参加者で均等に負担する。参加者が予定より5人増えたため、1人あたり500円安くなった。予定の人数は何人か。",a:"20人",ex:"2,500 − 2,000 = 500.",tip:"Đừng giải phương trình — thử đáp án."},
+{sec:"math",lv:3,t:"分割払い（手数料）",q:"頭金として総額の1/3を払い、残額を8回の均等払いにする。手数料は分割する額の1/8で、これも8回に均等に上乗せする。1回の支払額は総額の何分の何か。",a:"3/32",ex:"2/3 × 9/8 = 3/4 → ÷ 8.",tip:"Thấy 手数料 → nhân (1 + phí) vào phần chia kỳ trước, rồi mới chia số lần."},
+{sec:"math",lv:3,t:"仕事算（水槽）",q:"給水管Aでは20分、Bでは30分で満水になる。排水管Cは満水を15分で空にする。空の状態からA、B、Cを同時に開けると何分で満水になるか。",a:"60分",ex:"Tổng = 60: A +3, B +2, C −4 → ròng +1/phút.",tip:"Đặt tổng = BCNN(20, 30, 15) = 60."},
+{sec:"math",lv:3,t:"速さ（旅人算）",q:"1周1.2kmの池を、A（分速70m）とB（分速80m）が同じ地点から同時に出発する。\n①反対方向に進むと何分後に出会うか。\n②同じ方向に進むとBがAに追いつくのは何分後か。",a:"① 8分　② 120分",ex:"① 1,200 ÷ 150　② 1,200 ÷ 10.",tip:"Ngược chiều → cộng tốc độ; cùng chiều → trừ. Đổi km ra m trước."},
+{sec:"math",lv:3,t:"濃度（希釈）",q:"12%の食塩水に水を加えて8%の食塩水を450g作りたい。12%の食塩水は何g必要か。",a:"300g",ex:"Muối 36g → 36 ÷ 0.12.",tip:"Từ 12% xuống 8% = còn 2/3 → cần 2/3 của 450g."},
+{sec:"math",lv:3,t:"集合（3つ）",q:"200人中、A購入110人、B購入90人、C購入70人。AとBの両方40人、BとC30人、CとA35人、3つすべて15人。どれも買っていない人は何人か。",a:"20人",ex:"270 − 105 + 15 = 180 → 200 − 180.",tip:"Đơn − đôi + ba. Quên cộng lại phần giao cả ba → ra 35 là bẫy."},
+{sec:"math",lv:3,t:"確率（非復元抽出）",q:"赤玉4個、白玉2個の入った袋から、1個ずつ戻さずに2回取り出す。2回目が赤である確率はいくらか。",a:"2/3",ex:"4/6 × 3/5 + 2/6 × 4/5 = 12/30 + 8/30 = 2/3.",tip:"Không biết lần 1 ra gì thì xác suất lần k bằng lần 1 (4/6)."},
+{sec:"math",lv:3,t:"場合の数（並べ方）",q:"A〜Eの5人を1列に並べる。AとBが隣り合わない並べ方は何通りか。",a:"72通り",ex:"5! = 120; cạnh nhau = 4! × 2 = 48 → 120 − 48.",tip:"隣り合う = buộc thành một khối × 2; 合わない = tổng trừ đi."},
+{sec:"math",lv:3,t:"代金精算（貸し借り）",q:"XはYに3,000円貸している。X、Y、Zの3人で買い物をし、代金15,000円をZが全額払った。貸し借りも含めてすべて精算するには。",a:"Y→Z 8,000円、X→Z 2,000円",ex:"Mỗi người 5,000.",tip:"Số dư ròng: X −5,000 + 3,000 = −2,000; Y −5,000 − 3,000 = −8,000; Z +10,000."},
+{sec:"math",lv:3,t:"推論（数量）",q:"P、Q、Rの所持金の合計は1,500円。PはQより300円多く、RはQの2倍を持っている。確実に言えるのはどれか。\nア：PとRは同額　イ：Qが最も多い　ウ：Rは500円",a:"ア",ex:"Q = x → 4x + 300 = 1,500 → x = 300; P 600, R 600.",tip:"Đặt người được so sánh nhiều nhất (Q) làm ẩn."},
+{sec:"math",lv:3,t:"推論（正誤）",q:"P、Q、R、Sの身長について、PはQより高く、RはSより高く、SはQより高い。必ず正しいのはどれか。\nア：PはSより高い　イ：Qが最も低い\n（A）アだけ（B）イだけ（C）両方（D）どちらも正しくない",a:"(B) イだけ",ex:"R > S > Q và P > Q; P so với S không xác định.",tip:"Vẽ hai nhánh từ Q; hai người ở hai nhánh khác nhau thì không so được."},
+{sec:"math",lv:3,t:"表の読み取り（前年比の連続）",q:"ある店舗の売上は2024年が前年比+25%で5,000万円、2025年は前年比−20%だった。2025年の売上は2023年と比べてどうか。",a:"同じ（4,000万円）",ex:"5,000 ÷ 1.25 = 4,000; 5,000 × 0.8 = 4,000.",tip:"1.25 × 0.8 = 1 — cặp (+25%, −20%) triệt tiêu nhau."},
+// ===== Tiếng Anh – khó =====
+{sec:"eng",lv:3,t:"同意語",q:"Closest in meaning to METICULOUS:\n(A) careless (B) thorough (C) quick (D) generous (E) modest",a:"(B) thorough",ex:"meticulous = tỉ mỉ.",tip:"Không biết từ → tìm cặp trái nghĩa trong đáp án (careless ↔ thorough); đáp án thường nằm trong cặp đó."},
+{sec:"eng",lv:3,t:"反意語",q:"Opposite in meaning to TRANSIENT:\n(A) brief (B) temporary (C) permanent (D) fleeting (E) passing",a:"(C) permanent",ex:"transient = thoáng qua.",tip:"Bốn từ còn lại đều nghĩa \"ngắn ngủi\"."},
+{sec:"eng",lv:3,t:"英英辞書",q:"\"an attitude of doubting whether claims are true\"\n(A) optimism (B) skepticism (C) enthusiasm (D) criticism (E) ambiguity",a:"(B) skepticism",ex:"Từ khóa là doubt.",tip:"criticism là chê bai (bẫy gần nghĩa)."},
+{sec:"eng",lv:3,t:"空欄補充（倒置）",q:"Hardly ( ) the store opened when customers rushed in.\n(A) did (B) had (C) has (D) was",a:"(B) had",ex:"Hardly … when → had + S + p.p.",tip:"Hardly/Scarcely … when; No sooner … than."},
+{sec:"eng",lv:3,t:"誤文訂正",q:"Neither the manager (A) nor the staff members (B) was (C) aware of (D) the change.",a:"(B) → were",ex:"neither … nor: động từ chia theo chủ ngữ gần nhất (staff members)."},
+{sec:"eng",lv:3,t:"和文英訳",q:"「その計画は検討する価値がある。」\n(A) The plan is worth considering.\n(B) The plan is worth to consider.\n(C) The plan is worthy considering.",a:"(A)",ex:"worth + V-ing; worthy of + N/V-ing."},
+{sec:"eng",lv:3,t:"並べ替え",q:"[ to / the / was / first / she / arrive ]",a:"She was the first to arrive.",ex:"the first / the last / the only + to V."},
+{sec:"eng",lv:3,t:"長文読解（NOT問題）",q:"To reduce waste, a retailer began producing only the quantity it expects to sell, using sales data from each store. It also shortened the time from design to shelf, so it can respond quickly to trends. Unsold stock has fallen, although the system required a large investment in IT.\n\nWhich is NOT mentioned as part of the retailer's approach?\n(A) Using store sales data\n(B) Faster product development\n(C) Lowering prices on unsold stock",a:"(C)",ex:"Bài không nhắc giảm giá hàng tồn.",tip:"Câu NOT: dò từng đáp án trong bài, gạch cái tìm thấy."},
+// ===== 構造的把握力 =====
+{sec:"kozo",lv:2,t:"Câu trong ảnh mẫu",q:"つぎのア〜エのうち、問題の構造が似ているものの組み合わせを選びなさい。\nア：Sの蔵書の8割は文学書で、そのうちの3割が詩集である。詩集は蔵書全体の何割か。\nイ：共同経営者のTとUは3:2の出資額に応じて利益を分配している。Uの取り分は利益の何%か。\nウ：庭の草むしりで、兄は2m四方、弟は1m四方を担当した。兄の仕事量は弟の何倍か。\nエ：3年生と4年生に家庭教師の経験をたずねたところ、半数が「ある」と答え、4年生がその60%を占めた。経験のある3年生は全体の何%か。"+KZ,a:"C（アとエ）",ex:"ア = 80% × 30%, エ = 50% × 40%: đều là tỉ lệ của tỉ lệ. イ là chia theo tỉ lệ 3:2, ウ là so sánh diện tích 4 m² với 1 m²."},
+{sec:"kozo",lv:1,t:"Cấu trúc phép tính",q:"問題の構造が似ているものの組み合わせを選びなさい。\nア：400円のノートを3割引きで買った。支払額はいくらか。\nイ：利益10万円をTとUで3:2に分けた。Tの取り分はいくらか。\nウ：定価1,200円の商品を2割引きで売った。売価はいくらか。\nエ：時速60kmで2.5時間走った。走った距離は何kmか。"+KZ,a:"B（アとウ）",ex:"Cả hai là a × (1 − r).",tip:"Viết công thức chữ, không tính số: ア a(1−r), イ a×3/5, ウ a(1−r), エ v×t."},
+{sec:"kozo",lv:2,t:"Bài toán ngược",q:"ア：会員の60%が女性で、女性の半数が20代である。20代女性は会員全体の何%か。\nイ：今月の売上は先月より20%多い360万円だった。先月の売上はいくらか。\nウ：2つの店の売上比は5:3で、合計は400万円。多い方の売上はいくらか。\nエ：定価の25%引きで買ったら支払額は1,500円だった。定価はいくらか。"+KZ,a:"E（イとエ）",ex:"Cả hai cho số sau khi tăng/giảm, tìm số gốc (÷1.2 và ÷0.75).",tip:"Hỏi 元は / 先月は / 定価は mà đề cho số sau thay đổi → luôn là phép chia."},
+{sec:"kozo",lv:3,t:"Bối cảnh khác, cấu trúc giống",q:"ア：1周1.2kmの池の周りを、A（分速70m）とB（分速50m）が同じ地点から反対方向に歩き始めた。何分後に出会うか。\nイ：水槽を給水管Aでは20分、Bでは30分で満水にできる。両方を使うと何分で満水になるか。\nウ：分速60mで歩く弟が出発した5分後に、兄が分速80mで追いかけた。兄は何分で弟に追いつくか。\nエ：8%の食塩水300gと4%の食塩水100gを混ぜると何%になるか。"+KZ,a:"A（アとイ）",ex:"Cả hai là \"toàn bộ ÷ tổng tốc độ\": 1,200 ÷ (70 + 50) và 1 ÷ (1/20 + 1/30). ウ chia cho hiệu tốc độ, エ là trung bình có trọng số.",tip:"Đừng ghép theo chủ đề: ア và ウ cùng là đi bộ nhưng khác cấu trúc."},
+// ===== 組問題 =====
+{sec:"kumi",lv:1,t:"2問組",q:"Aさんは1個120円のパンを3個と1本150円の飲み物を2本、Bさんは同じパンを5個買った。\n\n問1　AさんとBさんの支払額の差はいくらか。\n問2　Bさんが1,000円札で払ったときのおつりはいくらか。",a:"問1 60円　問2 400円",ex:"A 360 + 300 = 660; B 600.",tip:"Ngay câu 1, ghi tổng tiền từng người lên nháp; câu 2 chỉ còn 1 phép trừ."},
+{sec:"kumi",lv:2,t:"3問組",q:"ある店ではTシャツを1枚1,500円、パーカーを1枚4,000円で売っている。会員は全品1割引き。非会員のPさんはTシャツ3枚とパーカー1枚、会員のQさんはTシャツ1枚とパーカー2枚を買った。\n\n問1　Pさんが買った枚数はQさんより何枚多いか。\n問2　支払額が多いのはどちらで、何円多いか。\n問3　Pさんも会員だったとすると、2人の支払額の差はいくらか。",a:"問1 1枚　問2 Qさんが50円多い　問3 900円",ex:"P 8,500; Q 9,500 × 0.9 = 8,550; P会員なら 7,650.",tip:"Câu 1 hỏi số cái, không phải tiền (giống bẫy 何冊多い trong ảnh mẫu). Câu 3: hiệu cũng giảm 10% → 0.9 × 1,000."},
+{sec:"kumi",lv:3,t:"3問組",q:"ある店の昨年の売上は衣料6,000万円、雑貨4,000万円だった。今年は衣料が10%減り、雑貨が25%増えた。\n\n問1　今年の売上合計は昨年比で何%増えたか。\n問2　今年の売上に占める雑貨の割合は約何%か。\n問3　来年、雑貨が横ばいのとき、合計を昨年比10%増にするには、衣料を今年より約何%増やせばよいか。",a:"問1 4%　問2 約48%　問3 約11%",ex:"今年: 5,400 + 5,000 = 10,400. 雑貨 5,000 ÷ 10,400 ≈ 48%. Cần 11,000 − 5,000 = 6,000 → 6,000 ÷ 5,400 ≈ 1.11.",tip:"Câu 3 bẫy là 10%: gốc tính là năm nay (đã giảm) nên phải tăng nhiều hơn."},
+// ===== 英語 書き換え =====
+{sec:"kaki",lv:1,t:"Trực tiếp → gián tiếp",q:"2つの文がほぼ同じ意味になるように、( 1 )( 2 )に入る語を選びなさい。不要な語も含まれる。\n\nShe said, \"I am busy now.\"\n→ She said that ( 1 ) ( 2 ) busy then.\n\n語群：she / I / was / is / am / were",a:"(1) she　(2) was",ex:"I → she, lùi thì am → was.",tip:"now → then trong câu là gợi ý lùi thì."},
+{sec:"kaki",lv:2,t:"Giống ảnh mẫu",q:"She said to me, \"I'll give you a call if I need some help.\"\n→ She told me that she ( 1 ) give me a call if she ( 2 ) some help.\n\n語群：will / would / shall / need / needs / needed",a:"(1) would　(2) needed",ex:"Cả hai ô đều lùi thì.",tip:"Từ thừa thường là dạng chưa lùi thì (will, needs) → loại ngay."},
+{sec:"kaki",lv:2,t:"so … that ↔ too … to",q:"This box is so heavy that I can't carry it.\n→ This box is ( 1 ) heavy for me ( 2 ) carry.\n\n語群：so / too / to / that / enough / it",a:"(1) too　(2) to",ex:"too + adj + for + O + to V.",tip:"Thấy \"for me\" là dấu hiệu too … to."},
+{sec:"kaki",lv:3,t:"It seems that → seem to have",q:"It seems that he knew the answer.\n→ He seems ( 1 ) ( 2 ) known the answer.\n\n語群：to / have / has / had / be / that",a:"(1) to　(2) have",ex:"Việc xảy ra trước seems → to have + p.p.",tip:"Thấy known sau ô trống → cần have."},
+{sec:"kaki",lv:3,t:"As soon as ↔ No sooner",q:"As soon as she arrived, it began to rain.\n→ No sooner ( 1 ) she arrived ( 2 ) it began to rain.\n\n語群：had / did / has / than / when / then",a:"(1) had　(2) than",ex:"No sooner + had + S + p.p. … than.",tip:"No sooner … than; Hardly … when — đừng trộn hai cặp."},
+
+// ================= KHO MỞ RỘNG =================
+// ----- Toán – cơ bản (bổ sung) -----
+{sec:"math",lv:1,t:"割合",q:"定員250人のホールの入場者は定員の84%だった。入場者は何人か。",a:"210人",ex:"250 × 0.84 = 210.",tip:"250 = 1000 ÷ 4 → 840 ÷ 4."},
+{sec:"math",lv:1,t:"割合（増加率）",q:"600円の商品が720円に値上がりした。何%の値上げか。",a:"20%",ex:"120 ÷ 600 = 0.2.",tip:"Luôn chia cho giá cũ, không chia cho giá mới."},
+{sec:"math",lv:1,t:"損益算（利益率）",q:"1個300円で仕入れた商品を1個390円で売った。原価に対する利益率は何%か。",a:"30%",ex:"90 ÷ 300 = 0.3."},
+{sec:"math",lv:1,t:"損益算（売価）",q:"定価3,000円の商品を15%引きで売った。売価はいくらか。",a:"2,550円",ex:"15% của 3,000 = 450 → 3,000 − 450.",tip:"10% = 300, 5% = 150."},
+{sec:"math",lv:1,t:"割引料金",q:"1枚250円のチケットは、20枚以上まとめて買うと全体が1割引きになる。24枚買うと代金はいくらか。",a:"5,400円",ex:"250 × 0.9 = 225 → 225 × 24.",tip:"Đọc kỹ: 全体が giảm hết, khác với 超えた分."},
+{sec:"math",lv:1,t:"分割払い",q:"総額の2/5を頭金として払い、残りを4回の均等払いにする。1回の支払額は総額の何分の何か。",a:"3/20",ex:"3/5 ÷ 4 = 3/20."},
+{sec:"math",lv:1,t:"仕事算",q:"ある作業をAが1人で行うと10時間、Bが1人で行うと15時間かかる。2人で行うと何時間かかるか。",a:"6時間",ex:"Tổng = 30: A 3/giờ, B 2/giờ → 30 ÷ 5."},
+{sec:"math",lv:1,t:"速さ",q:"分速75mで20分歩いた。歩いた距離は何kmか。",a:"1.5km",ex:"75 × 20 = 1,500m.",tip:"Đổi m → km ở bước cuối."},
+{sec:"math",lv:1,t:"速さ（単位換算）",q:"時速72kmは分速何mか。",a:"分速1,200m",ex:"72,000m ÷ 60.",tip:"Thuộc: 時速60km = 分速1km."},
+{sec:"math",lv:1,t:"濃度",q:"水190gに食塩10gを溶かした。食塩水の濃度は何%か。",a:"5%",ex:"10 ÷ (190 + 10) = 10/200.",tip:"Bẫy: chia cho 190."},
+{sec:"math",lv:1,t:"集合",q:"40人のクラスで、犬を飼っている人は15人、猫を飼っている人は12人、両方飼っている人は5人だった。どちらも飼っていない人は何人か。",a:"18人",ex:"15 + 12 − 5 = 22 → 40 − 22."},
+{sec:"math",lv:1,t:"確率",q:"硬貨を3枚同時に投げるとき、3枚とも表が出る確率はいくらか。",a:"1/8",ex:"(1/2)³."},
+{sec:"math",lv:1,t:"場合の数（順列）",q:"5人の中から委員長と副委員長を1人ずつ選ぶ方法は何通りか。",a:"20通り",ex:"5 × 4. Có phân biệt vai trò nên không chia."},
+{sec:"math",lv:1,t:"場合の数（積の法則）",q:"シャツが4種類、パンツが3種類ある。シャツとパンツを1枚ずつ選ぶ組み合わせは何通りか。",a:"12通り",ex:"4 × 3."},
+{sec:"math",lv:1,t:"推論（年齢）",q:"A、B、Cの3人について、AはBより2歳年上で、CはAより3歳年下である。最も年下なのは誰か。",a:"C",ex:"B = A − 2, C = A − 3 → C nhỏ nhất.",tip:"Đặt A = 0: B = −2, C = −3."},
+{sec:"math",lv:1,t:"表の読み取り",q:"ある店の売上総額は8,000万円で、構成比は衣料45%、雑貨30%、食品25%だった。雑貨の売上はいくらか。",a:"2,400万円",ex:"8,000 × 0.3."},
+// ----- Toán – trung bình (bổ sung) -----
+{sec:"math",lv:2,t:"割合（逆算）",q:"ある店の今月の客数は1,560人で、先月より4%増えた。先月の客数は何人か。",a:"1,500人",ex:"1,560 ÷ 1.04.",tip:"Thử đáp án: 1,500 × 1.04 = 1,560."},
+{sec:"math",lv:2,t:"割合（内訳）",q:"社員のうち正社員が70%で、正社員の40%、非正社員の80%が女性である。女性は社員全体の何%か。",a:"52%",ex:"0.7 × 0.4 + 0.3 × 0.8 = 0.28 + 0.24.",tip:"Đặt tổng 100 người → 28 + 24."},
+{sec:"math",lv:2,t:"損益算（原価を求める）",q:"原価の25%の利益を見込んで定価をつけたが、定価の1割引きで売ったところ利益は90円だった。原価はいくらか。",a:"720円",ex:"1.25 × 0.9 = 1.125 → 0.125 × 原価 = 90.",tip:"0.125 = 1/8 → 90 × 8."},
+{sec:"math",lv:2,t:"割引料金（団体）",q:"入場料は大人1,500円、子ども900円。10人以上の団体は全員2割引きになる。大人4人と子ども8人の団体の合計はいくらか。",a:"10,560円",ex:"(6,000 + 7,200) × 0.8 = 13,200 × 0.8.",tip:"12 người ≥ 10 → giảm cho tất cả."},
+{sec:"math",lv:2,t:"分割払い",q:"総額の3/10を頭金として払い、残りを7回の均等払いにする。頭金と1回目の分割払いの合計は総額の何分の何か。",a:"2/5",ex:"7/10 ÷ 7 = 1/10 → 3/10 + 1/10 = 4/10."},
+{sec:"math",lv:2,t:"仕事算（3人）",q:"ある仕事をAとBの2人で行うと12日、BとCで行うと20日、CとAで行うと15日かかる。3人で行うと何日かかるか。",a:"10日",ex:"Tổng = 60: A+B 5, B+C 3, C+A 4 → 2(A+B+C) = 12 → 6/ngày → 60 ÷ 6.",tip:"Cộng ba cặp rồi chia đôi."},
+{sec:"math",lv:2,t:"速さ（時間差）",q:"家から駅まで分速80mで歩くと、分速60mで歩くより5分早く着く。家から駅までの距離は何mか。",a:"1,200m",ex:"d/60 − d/80 = 5 → d × 1/240 = 5.",tip:"Thử đáp án: 1,200 ÷ 60 = 20 phút, ÷ 80 = 15 phút."},
+{sec:"math",lv:2,t:"速さ（通過算）",q:"長さ150mの列車が秒速20mで、長さ250mの鉄橋を渡り始めてから渡り終えるまで何秒かかるか。",a:"20秒",ex:"(150 + 250) ÷ 20.",tip:"Qua cầu = chiều dài cầu + chiều dài tàu."},
+{sec:"math",lv:2,t:"濃度（蒸発）",q:"6%の食塩水400gから水を蒸発させて8%の食塩水にしたい。何gの水を蒸発させればよいか。",a:"100g",ex:"Muối 24g → 24 ÷ 0.08 = 300g → 400 − 300.",tip:"Muối không đổi, chỉ nước đổi."},
+{sec:"math",lv:2,t:"集合",q:"80人のうち、英語検定の合格者は45人、漢字検定の合格者は38人、どちらも不合格の人は12人だった。両方に合格した人は何人か。",a:"15人",ex:"Ít nhất một = 68 → 45 + 38 − 68."},
+{sec:"math",lv:2,t:"確率（組合せ）",q:"1〜9の数字が書かれた9枚のカードから2枚を同時に引く。2枚とも偶数である確率はいくらか。",a:"1/6",ex:"₄C₂ ÷ ₉C₂ = 6/36.",tip:"Hoặc 4/9 × 3/8 = 12/72."},
+{sec:"math",lv:2,t:"場合の数（整数）",q:"0、1、2、3の4枚のカードから3枚を並べて3桁の整数をつくる。整数は何通りできるか。",a:"18通り",ex:"Hàng trăm 3 cách (không được 0) × 3 × 2.",tip:"Bẫy: 4 × 3 × 2 = 24."},
+{sec:"math",lv:2,t:"代金精算（4人）",q:"A、B、C、Dの4人で食事をし、Aが12,000円、Bが4,000円を払い、CとDは払っていない。均等に負担するにはどう精算するか。",a:"C→A 4,000円、D→A 4,000円",ex:"Mỗi người 4,000. B đã trả đúng phần mình.",tip:"Tính chênh lệch: A +8,000, B 0, C −4,000, D −4,000."},
+{sec:"math",lv:2,t:"推論（順序）",q:"P、Q、R、S、Tの5人が1列に並んでいる。Sは先頭、QはPの2人後ろ、RはQのすぐ前にいる。確実に言えるのはどれか。\nア：RはPのすぐ後ろ　イ：Tは最後尾　ウ：Qは4番目",a:"ア",ex:"P, R, Q liền nhau. Hai khả năng: S P R Q T hoặc S T P R Q.",tip:"Ghép khối PRQ trước, rồi trượt khối."},
+{sec:"math",lv:2,t:"推論（正誤）",q:"「この店で3,000円以上買った人は全員クーポンをもらった」が正しいとき、必ず正しいのはどれか。\nア：クーポンをもらっていない人は3,000円未満の買い物だった\nイ：クーポンをもらった人は3,000円以上買った\nウ：3,000円未満の人はクーポンをもらっていない",a:"アだけ",ex:"ア là 対偶 (đúng). イ là 逆, ウ là 裏 — đều không chắc.",tip:"Chỉ 対偶 luôn đúng."},
+{sec:"math",lv:2,t:"表の読み取り",q:"ある店の前年の売上は8,000万円で、今年は前年比15%増だった。今年の売上のうちEC比率は25%である。今年のEC売上はいくらか。",a:"2,300万円",ex:"8,000 × 1.15 = 9,200 → × 0.25.",tip:"9,200 ÷ 4."},
+// ----- Toán – khó (bổ sung) -----
+{sec:"math",lv:3,t:"割合（2商品）",q:"商品Aの価格は商品Bの1.5倍である。Aを2割引き、Bを1割値上げすると、その差は360円になった。Bの元の価格はいくらか。",a:"3,600円",ex:"A' = 1.5B × 0.8 = 1.2B, B' = 1.1B → 0.1B = 360.",tip:"Quy hết về B."},
+{sec:"math",lv:3,t:"損益算（一部値引き）",q:"原価500円の商品を100個仕入れ、原価の4割増しで定価をつけた。70個は定価で売れ、残りは定価の3割引きで全部売れた。利益はいくらか。",a:"13,700円",ex:"定価700. 70 × 700 = 49,000; 30 × 490 = 14,700 → 63,700 − 50,000.",tip:"Tính tổng doanh thu trước, trừ vốn một lần."},
+{sec:"math",lv:3,t:"料金比較",q:"携帯プランAは基本料1,500円＋1GBあたり500円、プランBは基本料3,000円＋1GBあたり200円である。何GBを超えるとBの方が安くなるか。",a:"5GB",ex:"1,500 + 500x > 3,000 + 200x → 300x > 1,500.",tip:"Chênh phí cố định ÷ chênh đơn giá."},
+{sec:"math",lv:3,t:"分割払い（2段階）",q:"購入時に総額の1/4を頭金として払い、2回目に頭金の2/3にあたる額を払った。残りを5回の均等払いにすると、1回分は総額の何分の何か。",a:"7/60",ex:"Lần 2 = 1/4 × 2/3 = 1/6 → còn 1 − 1/4 − 1/6 = 7/12 → ÷5.",tip:"頭金の2/3 nhân trên đặt cọc, không phải trên phần còn lại."},
+{sec:"math",lv:3,t:"仕事算（交代）",q:"Aが1人で12日、Bが1人で18日かかる仕事がある。最初Aが1人で何日か行い、残りをBが1人で行ったところ、全部で15日かかった。Aが働いたのは何日か。",a:"6日",ex:"Tổng = 36: A 3/ngày, B 2/ngày. 3a + 2(15 − a) = 36 → a = 6.",tip:"Giả sử B làm cả 15 ngày = 30 → thiếu 6, mỗi ngày A thay B bù thêm 1."},
+{sec:"math",lv:3,t:"速さ（流水算）",q:"船で川を36km上るのに3時間、下るのに2時間かかった。川の流れの速さは時速何kmか。",a:"時速3km",ex:"Ngược 12, xuôi 18 → (18 − 12) ÷ 2.",tip:"Dòng chảy = nửa hiệu; thuyền = nửa tổng."},
+{sec:"math",lv:3,t:"速さ（通過算）",q:"ある列車が長さ300mのトンネルに入り始めてから完全に出るまで25秒、電柱を通過するのに10秒かかった。列車の長さは何mか。",a:"200m",ex:"Thêm 15 giây cho 300m → 秒速20m → 20 × 10.",tip:"Lấy hiệu thời gian để triệt tiêu chiều dài tàu."},
+{sec:"math",lv:3,t:"濃度（混合比）",q:"10%の食塩水と4%の食塩水を混ぜて、6%の食塩水を600g作りたい。10%の食塩水は何g必要か。",a:"200g",ex:"Khoảng cách 4 và 2 → khối lượng 1:2 → 600 × 1/3.",tip:"6% gần 4% hơn → phần 4% nhiều hơn → 10% < 300g."},
+{sec:"math",lv:3,t:"集合（3つ・2つ以上）",q:"100人のうち、A社製品の使用者は50人、B社は35人、C社は25人である。2社以上を使う人は25人で、そのうち3社すべてを使う人は5人。どれも使っていない人は何人か。",a:"20人",ex:"Đúng 2 hãng = 20 người, 3 hãng = 5 người. Hợp = (50 + 35 + 25) − 20 − 2 × 5 = 80 → 100 − 80.",tip:"Người dùng 2 hãng bị đếm 2 lần (trừ 1), dùng 3 hãng bị đếm 3 lần (trừ 2)."},
+{sec:"math",lv:3,t:"確率（同じ色）",q:"赤玉3個、白玉2個、青玉1個の入った袋から同時に2個取り出す。2個が同じ色である確率はいくらか。",a:"4/15",ex:"₃C₂ + ₂C₂ = 3 + 1 = 4; ₆C₂ = 15.",tip:"Bỏ qua màu xanh vì chỉ có 1."},
+{sec:"math",lv:3,t:"確率（反復試行）",q:"成功する確率が0.6の試行を3回行う。ちょうど2回成功する確率はいくらか。",a:"0.432",ex:"₃C₂ × 0.6² × 0.4 = 3 × 0.144.",tip:"Bẫy: quên nhân 3 → 0.144."},
+{sec:"math",lv:3,t:"場合の数（組分け）",q:"6人を2人ずつ3つの組に分ける。組に区別がないとき、分け方は何通りか。",a:"15通り",ex:"₆C₂ × ₄C₂ ÷ 3! = 15 × 6 ÷ 6.",tip:"Nhóm không tên → chia 3!."},
+{sec:"math",lv:3,t:"代金精算（貸し借り・4人）",q:"A、B、C、Dの4人で旅行した。Aが宿泊費48,000円、Bが交通費24,000円、Cがレンタカー代16,000円を払い、Dは何も払っていない。また、DはBから事前に4,000円借りていた。すべて精算するにはどうすればよいか。",a:"D→A 26,000円、C→B 6,000円",ex:"Mỗi người 22,000. A +26,000; B +2,000 + 4,000 = +6,000; C −6,000; D −22,000 − 4,000 = −26,000.",tip:"Tổng các số dư phải bằng 0."},
+{sec:"math",lv:3,t:"推論（平均）",q:"A、B、Cの3人のテストの平均点は70点。AとBの平均は65点、BとCの平均は78点である。Bの点数は何点か。",a:"76点",ex:"Tổng 210; A + B = 130 → C = 80; B + C = 156 → B = 76.",tip:"Đổi trung bình thành tổng ngay."},
+{sec:"math",lv:3,t:"推論（リーグ戦）",q:"P、Q、R、Sの4チームが総当たり戦を行った（引き分けなし）。Pは3勝、QはRに勝ち、Sは1勝だった。確実に言えるのはどれか。\nア：Rは全敗　イ：QはSに勝った　ウ：Qは1勝以上",a:"ウ",ex:"Tổng 6 trận thắng → Q + R = 2. Nếu S thắng Q: Q 1, R 1; nếu S thắng R: Q 2, R 0. Chỉ ウ đúng trong cả hai trường hợp.",tip:"Tổng số trận thắng = số trận = ₄C₂ = 6."},
+{sec:"math",lv:3,t:"資料の読み取り",q:"店舗Aは客数1,200人・客単価2,500円、店舗Bは客数900人・客単価3,200円である。来月、Aの客単価が10%上がり客数が10%減ると、AとBの売上はどちらが何円多いか。",a:"Aが9万円多い",ex:"A: 300万 × 1.1 × 0.9 = 297万; B: 288万.",tip:"+10% rồi −10% = −1%."},
+// ----- Tiếng Anh – cơ bản (bổ sung) -----
+{sec:"eng",lv:1,t:"同意語",q:"Closest in meaning to BEGIN:\n(A) start (B) end (C) finish (D) stop (E) close",a:"(A) start",ex:"begin = start."},
+{sec:"eng",lv:1,t:"反意語",q:"Opposite in meaning to CHEAP:\n(A) low (B) expensive (C) free (D) easy (E) poor",a:"(B) expensive",ex:"cheap ↔ expensive."},
+{sec:"eng",lv:1,t:"英英辞書",q:"\"a written list of the food and drinks you can order in a restaurant\"\n(A) receipt (B) menu (C) order (D) bill (E) recipe",a:"(B) menu",ex:"receipt = hóa đơn đã trả, recipe = công thức nấu.",tip:"recipe/receipt là cặp bẫy quen thuộc."},
+{sec:"eng",lv:1,t:"空欄補充",q:"I'm looking forward to ( ) you.\n(A) see (B) seeing (C) saw (D) be seen",a:"(B) seeing",ex:"look forward to + V-ing (to là giới từ)."},
+{sec:"eng",lv:1,t:"空欄補充",q:"There ( ) many customers in the store yesterday.\n(A) is (B) was (C) are (D) were",a:"(D) were",ex:"yesterday → quá khứ; customers → số nhiều."},
+{sec:"eng",lv:1,t:"誤文訂正",q:"He (A) go (B) to work (C) by train (D) every day.",a:"(A) → goes",ex:"Chủ ngữ ngôi 3 số ít, hiện tại đơn."},
+{sec:"eng",lv:1,t:"和文英訳",q:"「これを試着してもいいですか。」\n(A) May I try this on?\n(B) May I try on this?\n(C) May I wear this?",a:"(A)",ex:"Đại từ (this/it) đặt giữa try … on.",tip:"wear = đang mặc, không phải thử đồ."},
+{sec:"eng",lv:1,t:"並べ替え",q:"[ open / the store / what time / does ] ?",a:"What time does the store open?",ex:"Từ để hỏi + does + S + V."},
+{sec:"eng",lv:1,t:"長文読解（お知らせ）",q:"NOTICE: Our store will be closed on Monday, March 3, for inventory. We will reopen on Tuesday at 10 a.m.\n\nWhy will the store be closed?\n(A) For a holiday (B) For inventory (C) For renovation",a:"(B)",ex:"\"for inventory\" = kiểm kê."},
+// ----- Tiếng Anh – trung bình (bổ sung) -----
+{sec:"eng",lv:2,t:"同意語",q:"Closest in meaning to SUFFICIENT:\n(A) enough (B) lacking (C) excessive (D) efficient (E) suitable",a:"(A) enough",ex:"sufficient = đủ.",tip:"efficient là bẫy vì giống mặt chữ."},
+{sec:"eng",lv:2,t:"反意語",q:"Opposite in meaning to ACCEPT:\n(A) receive (B) reject (C) agree (D) admit (E) adopt",a:"(B) reject",ex:"accept ↔ reject."},
+{sec:"eng",lv:2,t:"英英辞書",q:"\"money that you pay for a professional service\"\n(A) fee (B) fare (C) fine (D) salary (E) tax",a:"(A) fee",ex:"fare = tiền vé xe, fine = tiền phạt, salary = lương nhận về."},
+{sec:"eng",lv:2,t:"空欄補充（関係副詞）",q:"This is the store ( ) I bought this jacket.\n(A) which (B) where (C) what (D) who",a:"(B) where",ex:"Sau ô trống là câu đủ thành phần (I bought this jacket) → where.",tip:"Câu sau thiếu tân ngữ → which; đủ → where."},
+{sec:"eng",lv:2,t:"空欄補充",q:"The meeting was postponed ( ) the heavy rain.\n(A) because (B) because of (C) although (D) despite",a:"(B) because of",ex:"Sau ô trống là danh từ, nghĩa nguyên nhân.",tip:"despite cũng + danh từ nhưng nghĩa \"mặc dù\"."},
+{sec:"eng",lv:2,t:"誤文訂正",q:"Each of the (A) staff members (B) have (C) their own (D) locker.",a:"(B) → has",ex:"Each of + N số nhiều → động từ số ít."},
+{sec:"eng",lv:2,t:"和文英訳",q:"「私はそこへ一度も行ったことがない。」\n(A) I have never been there.\n(B) I have never gone there.\n(C) I never went to there.",a:"(A)",ex:"have been (to) = đã từng đến; have gone = đã đi (chưa về).",tip:"there không đi với to."},
+{sec:"eng",lv:2,t:"並べ替え",q:"[ me / let / know / if / any / you / have / questions ]",a:"Let me know if you have any questions.",ex:"let + O + V nguyên mẫu."},
+{sec:"eng",lv:2,t:"長文読解（社内メール）",q:"Dear staff,\nFrom next month, all part-time staff will be able to request shifts through the online system. Requests must be submitted by the 20th of the previous month. Changes after that date need the manager's approval.\n\nWhat must staff do to change a shift after the 20th?\n(A) Use the online system again\n(B) Get the manager's approval\n(C) Wait until next month",a:"(B)",ex:"\"Changes after that date need the manager's approval.\"",tip:"Tìm cụm \"after the 20th\" trong bài."},
+// ----- Tiếng Anh – khó (bổ sung) -----
+{sec:"eng",lv:3,t:"同意語",q:"Closest in meaning to SCRUTINIZE:\n(A) ignore (B) examine (C) praise (D) predict (E) delay",a:"(B) examine",ex:"scrutinize = xem xét kỹ."},
+{sec:"eng",lv:3,t:"反意語",q:"Opposite in meaning to DELIBERATE:\n(A) intentional (B) careful (C) accidental (D) planned (E) slow",a:"(C) accidental",ex:"deliberate = cố ý.",tip:"intentional, planned đồng nghĩa với nhau → loại."},
+{sec:"eng",lv:3,t:"英英辞書",q:"\"a person who has just started learning a skill or activity\"\n(A) veteran (B) novice (C) expert (D) mentor (E) rival",a:"(B) novice",ex:"novice = người mới."},
+{sec:"eng",lv:3,t:"空欄補充（仮定法）",q:"I'd rather you ( ) smoke here.\n(A) don't (B) didn't (C) won't (D) not",a:"(B) didn't",ex:"would rather + S + quá khứ (giả định hiện tại)."},
+{sec:"eng",lv:3,t:"空欄補充（仮定法現在）",q:"She suggested that he ( ) a day off.\n(A) takes (B) take (C) took (D) taking",a:"(B) take",ex:"suggest that + S + (should) V nguyên mẫu.",tip:"Cũng áp dụng cho insist, demand, recommend."},
+{sec:"eng",lv:3,t:"誤文訂正",q:"Not only the students (A) but also the teacher (B) were (C) surprised at (D) the news.",a:"(B) → was",ex:"not only A but also B: chia theo B (the teacher)."},
+{sec:"eng",lv:3,t:"和文英訳（仮定法過去完了）",q:"「もっと早く出発していれば、電車に間に合ったのに。」\n(A) If we had left earlier, we could have caught the train.\n(B) If we left earlier, we could catch the train.\n(C) If we have left earlier, we can catch the train.",a:"(A)",ex:"Giả định trái với quá khứ → had p.p. … could have p.p."},
+{sec:"eng",lv:3,t:"並べ替え",q:"[ is / no / it / use / crying ] over spilt milk.",a:"It is no use crying over spilt milk.",ex:"It is no use + V-ing = làm … cũng vô ích."},
+{sec:"eng",lv:3,t:"長文読解（推論）",q:"Some retailers reduced plastic bags by charging for them. Within a year, the share of customers who brought their own bags rose from 30% to 75%. However, sales of garbage bags also increased, because many households had been using shopping bags for their trash.\n\nWhat can be inferred from the passage?\n(A) Plastic use fell to zero.\n(B) Some households started buying garbage bags instead.\n(C) Most customers stopped shopping at these stores.",a:"(B)",ex:"Túi mua sắm từng được dùng đựng rác → giờ phải mua túi rác.",tip:"Câu suy luận: đáp án đúng vẫn bám sát một câu trong bài; đáp án tuyệt đối (zero) thường sai."},
+// ----- 構造的把握力 (bổ sung) -----
+{sec:"kozo",lv:1,t:"Đơn giá × số lượng",q:"ア：3kmの道のりを時速6kmで歩くと何時間かかるか。\nイ：600円を兄と弟で2:1に分けると、兄はいくらか。\nウ：1本80円の鉛筆を6本買うといくらか。\nエ：1冊120円のノートを5冊買うといくらか。"+KZ,a:"F（ウとエ）",ex:"ウ và エ đều là đơn giá × số lượng. ア là quãng đường ÷ tốc độ, イ là chia theo tỉ lệ.",tip:"Bài cơ bản: cặp đúng thường có cùng đơn vị hỏi (円)."},
+{sec:"kozo",lv:1,t:"和差算",q:"ア：姉と妹の所持金の合計は3,000円で、姉は妹より600円多い。妹はいくら持っているか。\nイ：定価の1割引きは900円だった。定価はいくらか。\nウ：大人と子どもの入場者は合わせて120人で、大人は子どもより20人多い。子どもは何人か。\nエ：600gの20%は何gか。"+KZ,a:"B（アとウ）",ex:"ア và ウ: biết tổng và hiệu → (tổng − hiệu) ÷ 2.",tip:"Dấu hiệu 合計 + 〜より〜多い."},
+{sec:"kozo",lv:1,t:"Trung bình → tổng",q:"ア：3回のテストの平均は70点だった。4回目で何点をとれば平均が72点になるか。\nイ：5人の平均身長は160cmだったが、1人加わると平均が161cmになった。加わった人の身長は何cmか。\nウ：時速40kmで2時間走ると何km進むか。\nエ：50人の30%は何人か。"+KZ,a:"A（アとイ）",ex:"Cả hai: trung bình × số người = tổng, rồi lấy hiệu hai tổng.",tip:"72 × 4 − 70 × 3; 161 × 6 − 160 × 5."},
+{sec:"kozo",lv:2,t:"残りの割合",q:"ア：給料の1/4を家賃に、残りの1/3を食費に使った。食費は給料の何分の何か。\nイ：予算の40%を広告費に使い、広告費の半分をSNSに使った。SNS費は予算の何%か。\nウ：本を1日目に全体の1/3、2日目に残りの1/2読んだ。2日目に読んだのは全体の何分の何か。\nエ：今年の売上は昨年より10%増えた。今年は昨年の何倍か。"+KZ,a:"B（アとウ）",ex:"ア và ウ đều là (1 − a) × b vì có 残りの. イ là a × b trực tiếp.",tip:"Gạch chân chữ 残り — nó quyết định cấu trúc."},
+{sec:"kozo",lv:2,t:"Năng suất cộng dồn",q:"ア：原価800円の商品に25%の利益を見込んで定価をつけた。定価はいくらか。\nイ：Aは6日、Bは12日で終える仕事を、2人で行うと何日かかるか。\nウ：行きは時速6km、帰りは時速4kmで往復したときの平均時速は何kmか。\nエ：水槽を給水管Aでは10分、Bでは15分で満水にできる。両方使うと何分か。"+KZ,a:"E（イとエ）",ex:"イ và エ: 1 ÷ (1/a + 1/b). ウ trông giống nhưng là 2 ÷ (1/a + 1/b).",tip:"Đừng ghép ウ chỉ vì cũng có hai tốc độ."},
+{sec:"kozo",lv:2,t:"Giá bậc thang",q:"ア：入場料1人800円で、10人を超えた分は2割引きになる。15人の料金はいくらか。\nイ：電気料金は100kWhまで1kWhあたり20円、超えた分は30円である。150kWh使うといくらか。\nウ：全品2割引きのセールで、3,000円の商品はいくらか。\nエ：定価から2割引きし、さらに1割引きすると定価の何%か。"+KZ,a:"A（アとイ）",ex:"ア và イ: phần trong ngưỡng × giá 1 + phần vượt × giá 2.",tip:"Dấu hiệu 超えた分."},
+{sec:"kozo",lv:3,t:"Trung bình có trọng số",q:"ア：同じ道を時速6kmで行き、時速4kmで帰ったときの平均時速は何kmか。\nイ：6%の食塩水100gと10%の食塩水300gを混ぜると何%になるか。\nウ：定価から2割引きし、さらに1割引きした価格は定価の何%か。\nエ：Aクラス30人の平均点は60点、Bクラス20人の平均点は70点。全体の平均点は何点か。"+KZ,a:"E（イとエ）",ex:"イ và エ: (giá trị × trọng số) cộng lại ÷ tổng trọng số. ア cũng là trung bình nhưng trọng số là thời gian, không phải quãng đường → khác cấu trúc.",tip:"てんびん dùng được cho cả イ và エ."},
+{sec:"kozo",lv:3,t:"つるかめ算",q:"ア：兄と弟の年齢の和は30歳、差は4歳である。兄は何歳か。\nイ：定価の15%引きで買ったら1,700円だった。定価はいくらか。\nウ：1個80円のりんごと1個120円の梨を合わせて10個買い、1,000円払った。梨は何個か。\nエ：50円玉と100円玉が合わせて20枚あり、合計1,450円である。100円玉は何枚か。"+KZ,a:"F（ウとエ）",ex:"ウ và エ: biết tổng số lượng và tổng tiền của hai loại đơn giá → giả sử tất cả là loại rẻ rồi bù.",tip:"ア cũng có tổng nhưng là tổng + hiệu (和差算)."},
+{sec:"kozo",lv:3,t:"Tỉ số thay đổi",q:"ア：姉と妹の所持金の比は3:2である。姉が妹に300円渡すと比は1:1になる。姉の所持金は。\nイ：AとBの所持金の比は5:3である。2人とも200円使うと比は3:1になる。Aの所持金は。\nウ：兄と弟の年齢の比は5:2である。6年後には比が2:1になる。現在の兄の年齢は。\nエ：12%の食塩水300gに水を加えて9%にするには何g加えればよいか。"+KZ,a:"D（イとウ）",ex:"イ và ウ: hai bên cùng thay đổi một lượng như nhau → hiệu không đổi. ア là cho nhau → tổng không đổi.",tip:"Hỏi: cái gì giữ nguyên — tổng hay hiệu?"},
+// ----- 組問題 (bổ sung) -----
+{sec:"kumi",lv:1,t:"2問組",q:"文具店でノートは1冊150円、ペンは1本80円である。Pさんはノート2冊とペン3本、Qさんはノート3冊とペン1本を買った。\n\n問1　Pさんの支払額はいくらか。\n問2　2人の支払額の差はいくらか。",a:"問1 540円　問2 10円",ex:"P 300 + 240 = 540; Q 450 + 80 = 530.",tip:"Ghi cả hai tổng ngay từ câu 1."},
+{sec:"kumi",lv:1,t:"2問組（表）",q:"店舗A：客数200人、売上40万円\n店舗B：客数250人、売上45万円\n\n問1　店舗Aの客単価はいくらか。\n問2　店舗Bの客単価は店舗Aより何円低いか。",a:"問1 2,000円　問2 200円",ex:"A 400,000 ÷ 200; B 450,000 ÷ 250 = 1,800.",tip:"客単価 = 売上 ÷ 客数."},
+{sec:"kumi",lv:2,t:"3問組（ảnh mẫu kiểu hiệu sách）",q:"ある書店では会員は全品1割引きになる。会員のPさんは800円の単行本を2冊と500円の雑誌を1冊、非会員のQさんは同じ単行本を1冊と雑誌を3冊買った。\n\n問1　Qさんが買った冊数はPさんより何冊多いか。\n問2　Pさんの支払額はいくらか。\n問3　2人の支払額の差はいくらか。",a:"問1 1冊　問2 1,890円　問3 410円",ex:"P (1,600 + 500) × 0.9 = 1,890; Q 800 + 1,500 = 2,300.",tip:"Câu 1 hỏi số cuốn — giống bẫy trong ảnh mẫu."},
+{sec:"kumi",lv:2,t:"3問組（割合）",q:"ある会社の社員100人のうち男性は60人、女性は40人である。自転車で通勤しているのは男性の25%、女性の30%である。\n\n問1　自転車通勤の社員は何人か。\n問2　自転車通勤の社員のうち女性は約何%か。\n問3　新たに女性10人が入社し、そのうち6人が自転車通勤だった。全社員に占める自転車通勤の割合は何%か。",a:"問1 27人　問2 約44%　問3 30%",ex:"15 + 12 = 27; 12 ÷ 27 ≈ 0.44; 33 ÷ 110 = 0.3.",tip:"Câu 2: 12/27 = 4/9 ≈ 44%."},
+{sec:"kumi",lv:3,t:"3問組（損益）",q:"ある商品を1個600円で200個仕入れ、原価の5割増しで定価をつけた。1日目に定価で120個売れ、2日目に残りをすべて定価の2割引きで売り切った。\n\n問1　定価はいくらか。\n問2　2日目の売上はいくらか。\n問3　全体の利益はいくらか。",a:"問1 900円　問2 57,600円　問3 45,600円",ex:"2日目 80 × 720; 全体 108,000 + 57,600 − 120,000.",tip:"Vốn = 600 × 200 = 120,000, tính một lần."},
+{sec:"kumi",lv:3,t:"3問組（料金プラン）",q:"あるジムの料金は次の3通りである。\n・都度払い：1回700円\n・Aプラン：月額2,000円＋1回300円\n・Bプラン：月額5,000円で通い放題\n\n問1　月6回利用するとき、Aプランの料金はいくらか。\n問2　Aプランと都度払いの料金が等しくなるのは月何回か。\n問3　Bプランが3つの中で最も安くなるのは月何回以上か。",a:"問1 3,800円　問2 5回　問3 11回以上",ex:"2,000 + 300n = 700n → n = 5. B < A: 5,000 < 2,000 + 300n → n > 10.",tip:"Câu 3 phải so với cả hai; bẫy là 10 (bằng nhau, chưa rẻ hơn)."},
+// ----- 英語 書き換え (bổ sung) -----
+{sec:"kaki",lv:1,t:"Chủ động → bị động",q:"Many people visit this store.\n→ This store ( 1 ) ( 2 ) by many people.\n\n語群：is / are / was / visit / visited / visiting",a:"(1) is　(2) visited",ex:"Bị động hiện tại: is + p.p.",tip:"store số ít, câu gốc hiện tại → is."},
+{sec:"kaki",lv:1,t:"Mệnh lệnh + or",q:"If you don't hurry, you will be late.\n→ ( 1 ) up, ( 2 ) you will be late.\n\n語群：Hurry / Hurried / or / and / but / so",a:"(1) Hurry　(2) or",ex:"Mệnh lệnh, or … = nếu không thì.",tip:"and đi với kết quả tốt, or đi với kết quả xấu."},
+{sec:"kaki",lv:1,t:"So sánh",q:"Tom is taller than Ken.\n→ Ken is not ( 1 ) tall ( 2 ) Tom.\n\n語群：as / so / than / more / that / very",a:"(1) so　(2) as",ex:"not so (as) … as. Mỗi từ dùng 1 lần nên chỉ còn so … as.",tip:"Luật \"mỗi từ 1 lần\" giúp loại đáp án."},
+{sec:"kaki",lv:2,t:"Danh động từ làm chủ ngữ",q:"It is difficult to learn English.\n→ ( 1 ) English ( 2 ) difficult.\n\n語群：Learning / Learn / is / are / to / it",a:"(1) Learning　(2) is",ex:"V-ing làm chủ ngữ → động từ số ít."},
+{sec:"kaki",lv:2,t:"Mệnh đề → cụm danh từ",q:"He couldn't come because he was sick.\n→ He couldn't come ( 1 ) ( 2 ) his sickness.\n\n語群：because / of / since / for / while / that",a:"(1) because　(2) of",ex:"Sau ô trống là danh từ → because of."},
+{sec:"kaki",lv:2,t:"Đại từ quan hệ whose",q:"I have a friend. His father is a doctor.\n→ I have a friend ( 1 ) father ( 2 ) a doctor.\n\n語群：who / whose / which / is / are / his",a:"(1) whose　(2) is",ex:"his → whose."},
+{sec:"kaki",lv:3,t:"enough to",q:"He is very rich, so he can buy the house.\n→ He is rich ( 1 ) ( 2 ) buy the house.\n\n語群：enough / to / so / too / that / for",a:"(1) enough　(2) to",ex:"adj + enough to V.",tip:"too … to mang nghĩa phủ định, không dùng được ở đây."},
+{sec:"kaki",lv:3,t:"But for",q:"If it were not for your help, I could not finish the work.\n→ ( 1 ) ( 2 ) your help, I could not finish the work.\n\n語群：But / for / Without / of / If / not",a:"(1) But　(2) for",ex:"If it were not for = But for = Without.",tip:"Có 2 ô nên Without (1 từ) không đủ."},
+{sec:"kaki",lv:3,t:"It is said that → be said to",q:"People say that he is rich.\n→ He ( 1 ) said ( 2 ) be rich.\n\n語群：is / was / to / that / be / are",a:"(1) is　(2) to",ex:"S + is said to + V.",tip:"say ở hiện tại → is; is rich cùng thời → to be."},
+
+// ================= KHO MỞ RỘNG 2: MỨC CƠ BẢN =================
+// ----- Toán – cơ bản -----
+{sec:"math",lv:1,t:"割合",q:"500人の35%は何人か。",a:"175人",ex:"500 × 0.35 = 175.",tip:"10% = 50 → 30% = 150, 5% = 25."},
+{sec:"math",lv:1,t:"割合（割引率）",q:"定価4,000円の商品が3,200円で売られている。定価の何%引きか。",a:"20%",ex:"Giảm 800 ÷ 4,000 = 0.2."},
+{sec:"math",lv:1,t:"割合（全体を求める）",q:"ある店の客のうち3/5が女性で、女性は48人だった。客は全体で何人か。",a:"80人",ex:"48 ÷ 3/5 = 48 × 5/3.",tip:"1/5 = 16 người → × 5."},
+{sec:"math",lv:1,t:"割合（減少）",q:"昨年の売上は500万円で、今年は昨年より8%減った。今年の売上はいくらか。",a:"460万円",ex:"500 × 0.92 = 460."},
+{sec:"math",lv:1,t:"損益算（定価）",q:"原価800円の商品に、原価の3割の利益を見込んで定価をつけた。定価はいくらか。",a:"1,040円",ex:"800 × 1.3 = 1,040."},
+{sec:"math",lv:1,t:"損益算（利益率）",q:"原価1,200円の商品を1,500円で売った。利益は原価の何%か。",a:"25%",ex:"300 ÷ 1,200 = 1/4."},
+{sec:"math",lv:1,t:"損益算（原価）",q:"定価2,000円の商品を定価の1割引きで売ると、利益は300円だった。原価はいくらか。",a:"1,500円",ex:"売価 1,800 − 利益 300."},
+{sec:"math",lv:1,t:"損益算（まとめ売り）",q:"1個150円で100個仕入れた商品を、すべて1個200円で売った。利益はいくらか。",a:"5,000円",ex:"Lãi mỗi cái 50 × 100."},
+{sec:"math",lv:1,t:"割引料金（回数券）",q:"コーヒーは1杯400円だが、11杯分の回数券は4,000円で買える。回数券で11杯飲むと、1杯ずつ買うより何円得か。",a:"400円",ex:"11 × 400 = 4,400 → 4,400 − 4,000."},
+{sec:"math",lv:1,t:"割引料金（学生）",q:"映画の料金は一般1,800円で、学生は一般より500円安い。一般2人と学生3人の合計はいくらか。",a:"7,500円",ex:"3,600 + 3 × 1,300 = 3,600 + 3,900."},
+{sec:"math",lv:1,t:"割引料金（2段階）",q:"ランチは900円で、平日は100円引きになる。さらにクーポンを使うと、その金額から1割引きになる。平日にクーポンを使うといくらか。",a:"720円",ex:"(900 − 100) × 0.9.",tip:"Giảm lần 2 tính trên giá đã giảm."},
+{sec:"math",lv:1,t:"送料条件",q:"ネットショップは5,000円以上の購入で送料無料になる。4,300円分を選んだ。送料無料にするには最低あと何円分買えばよいか。",a:"700円",ex:"5,000 − 4,300."},
+{sec:"math",lv:1,t:"分割払い",q:"総額の1/3を頭金として払い、残りを4回の均等払いにする。1回の支払額は総額の何分の何か。",a:"1/6",ex:"2/3 ÷ 4 = 2/12."},
+{sec:"math",lv:1,t:"分割払い",q:"総額の1/5を頭金として払い、残りを8回の均等払いにする。1回の支払額は総額の何分の何か。",a:"1/10",ex:"4/5 ÷ 8 = 4/40."},
+{sec:"math",lv:1,t:"分割払い（金額）",q:"12万円のパソコンを、頭金3万円、残りを6回の均等払いで買う。1回の支払額はいくらか。",a:"15,000円",ex:"(120,000 − 30,000) ÷ 6."},
+{sec:"math",lv:1,t:"分割払い（比較）",q:"総額の1/4を頭金として払い、残りを3回の均等払いにする。1回の支払額は頭金の何倍か。",a:"1倍（同じ）",ex:"3/4 ÷ 3 = 1/4 = 頭金."},
+{sec:"math",lv:1,t:"仕事算",q:"ある作業をAは1人で6時間、Bは1人で3時間で終える。2人で行うと何時間かかるか。",a:"2時間",ex:"Tổng = 6: A 1/giờ, B 2/giờ → 6 ÷ 3."},
+{sec:"math",lv:1,t:"仕事算",q:"ある仕事をAは1人で20日、Bは1人で30日で終える。2人で行うと何日かかるか。",a:"12日",ex:"Tổng = 60: A 3, B 2 → 60 ÷ 5."},
+{sec:"math",lv:1,t:"仕事算（人数）",q:"1人で8日かかる仕事を、同じ能率の4人で行うと何日かかるか。",a:"2日",ex:"8 ÷ 4."},
+{sec:"math",lv:1,t:"仕事算（枚数）",q:"封筒の封をする作業を、Aは1分に4枚、Bは1分に6枚行う。2人で300枚を終えるのに何分かかるか。",a:"30分",ex:"300 ÷ (4 + 6)."},
+{sec:"math",lv:1,t:"速さ",q:"時速45kmで2時間40分走ると、何km進むか。",a:"120km",ex:"45 × 8/3 = 120.",tip:"40 phút = 2/3 giờ."},
+{sec:"math",lv:1,t:"速さ",q:"1.8kmの道のりを分速60mで歩くと何分かかるか。",a:"30分",ex:"1,800 ÷ 60."},
+{sec:"math",lv:1,t:"速さ",q:"家から駅まで900mある。自転車で分速180mで走ると何分で着くか。",a:"5分",ex:"900 ÷ 180."},
+{sec:"math",lv:1,t:"速さ（出会い）",q:"1.5km離れた2地点から、A（分速70m）とB（分速80m）が向かい合って同時に出発した。何分後に出会うか。",a:"10分後",ex:"1,500 ÷ (70 + 80).",tip:"Đi ngược chiều → cộng tốc độ."},
+{sec:"math",lv:1,t:"濃度（食塩の量）",q:"15%の食塩水200gに含まれる食塩は何gか。",a:"30g",ex:"200 × 0.15."},
+{sec:"math",lv:1,t:"濃度（水を加える）",q:"10%の食塩水300gに水を200g加えると、濃度は何%になるか。",a:"6%",ex:"Muối 30g ÷ 500g."},
+{sec:"math",lv:1,t:"濃度（食塩水の量）",q:"食塩20gを使って8%の食塩水を作る。食塩水は何gできるか。",a:"250g",ex:"20 ÷ 0.08."},
+{sec:"math",lv:1,t:"濃度（同量の混合）",q:"4%の食塩水200gと8%の食塩水200gを混ぜると何%になるか。",a:"6%",ex:"(8 + 16) ÷ 400.",tip:"Hai lượng bằng nhau → trung bình cộng."},
+{sec:"math",lv:1,t:"集合（少なくとも一方）",q:"50人のうち、自転車を持っている人は30人、車を持っている人は15人、両方持っている人は8人。少なくとも一方を持っている人は何人か。",a:"37人",ex:"30 + 15 − 8."},
+{sec:"math",lv:1,t:"集合（両方）",q:"60人のうち、Aを利用する人は40人、Bを利用する人は35人、どちらも利用しない人は5人だった。両方を利用する人は何人か。",a:"20人",ex:"Ít nhất một = 55 → 40 + 35 − 55."},
+{sec:"math",lv:1,t:"集合（両方）",q:"30人のクラスで、英語が好きな人は18人、数学が好きな人は12人、どちらも好きでない人は6人。両方好きな人は何人か。",a:"6人",ex:"Ít nhất một = 24 → 18 + 12 − 24."},
+{sec:"math",lv:1,t:"集合（一方だけ）",q:"100人のうち、商品Aを知っている人は70人、Bを知っている人は50人、両方知っている人は30人。Aだけを知っている人は何人か。",a:"40人",ex:"70 − 30."},
+{sec:"math",lv:1,t:"確率",q:"サイコロを1個投げるとき、3の倍数の目が出る確率はいくらか。",a:"1/3",ex:"3 và 6 → 2/6."},
+{sec:"math",lv:1,t:"確率",q:"サイコロを2個投げるとき、2個とも同じ目が出る確率はいくらか。",a:"1/6",ex:"6 cặp / 36."},
+{sec:"math",lv:1,t:"確率",q:"赤玉3個と白玉2個が入った袋から1個取り出すとき、赤玉が出る確率はいくらか。",a:"3/5",ex:"3 ÷ 5."},
+{sec:"math",lv:1,t:"確率",q:"硬貨を2枚投げるとき、1枚だけ表が出る確率はいくらか。",a:"1/2",ex:"(表,裏)(裏,表) → 2/4."},
+{sec:"math",lv:1,t:"場合の数（並べ方）",q:"A、B、C、Dの4人を1列に並べる方法は何通りか。",a:"24通り",ex:"4 × 3 × 2 × 1."},
+{sec:"math",lv:1,t:"場合の数（選び方）",q:"5種類のケーキから2種類を選ぶ方法は何通りか。",a:"10通り",ex:"₅C₂ = 5 × 4 ÷ 2."},
+{sec:"math",lv:1,t:"場合の数（整数）",q:"1、2、3、4のカードから2枚を並べて2桁の整数を作る。何通りできるか。",a:"12通り",ex:"4 × 3."},
+{sec:"math",lv:1,t:"場合の数（道順）",q:"家から駅までの道は3通り、駅から店までの道は2通りある。家から駅を通って店まで行く道順は何通りか。",a:"6通り",ex:"3 × 2."},
+{sec:"math",lv:1,t:"代金精算",q:"AとBの2人で4,000円の食事をし、Aが全額払った。同額を負担するにはどう精算するか。",a:"B→A 2,000円",ex:"Mỗi người 2,000."},
+{sec:"math",lv:1,t:"代金精算",q:"A、B、Cの3人でタクシーに乗り、料金3,600円をAが払った。同額を負担するにはどう精算するか。",a:"B→A 1,200円、C→A 1,200円",ex:"3,600 ÷ 3 = 1,200."},
+{sec:"math",lv:1,t:"代金精算",q:"AとBで買い物をし、Aが5,000円、Bが1,000円払った。同額を負担するにはどう精算するか。",a:"B→A 2,000円",ex:"Mỗi người 3,000 → B còn thiếu 2,000."},
+{sec:"math",lv:1,t:"代金精算（4人）",q:"A、B、C、Dの4人で8,000円のプレゼントを買い、Aが6,000円、Bが2,000円を払った。同額を負担するにはどう精算するか。",a:"C→A 2,000円、D→A 2,000円",ex:"Mỗi người 2,000; B đã đủ."},
+{sec:"math",lv:1,t:"推論（順序）",q:"A、B、Cの3人の身長について、AはBより高く、CはAより高い。最も背が高いのは誰か。",a:"C",ex:"C > A > B."},
+{sec:"math",lv:1,t:"推論（順序）",q:"P、Q、R、Sの4人が到着した。Sが最初で、QはPのすぐ次に、RはQより後に着いた。3番目に着いたのは誰か。",a:"Q",ex:"S → P → Q → R."},
+{sec:"math",lv:1,t:"推論（順序）",q:"A、B、C、Dの4人の得点について、AはBより高く、CはBより低く、DはAより高い。2番目に高いのは誰か。",a:"A",ex:"D > A > B > C."},
+{sec:"math",lv:1,t:"推論（順序）",q:"5人が1列に並んでいる。Bは真ん中にいて、AはBのすぐ前にいる。確実に言えるのはどれか。\nア：Aは前から2番目　イ：Cは最後尾",a:"ア",ex:"B ở vị trí 3 → A ở vị trí 2. Không biết C."},
+{sec:"math",lv:1,t:"推論（正誤）",q:"「雨の日はこの店が混む」が正しいとき、必ず正しいのはどれか。\nア：この店が混まない日は雨ではない\nイ：この店が混む日は雨である",a:"ア",ex:"ア là 対偶; イ là 逆."},
+{sec:"math",lv:1,t:"推論（正誤）",q:"「この店のTシャツはすべて綿でできている」が正しいとき、必ず正しいのはどれか。\nア：綿でできていないTシャツはこの店のものではない\nイ：この店の綿製品はすべてTシャツである",a:"ア",ex:"ア là 対偶; イ là 逆."},
+{sec:"math",lv:1,t:"推論（正誤）",q:"「PはQより高く、QはRより高い」が正しいとき、必ず正しいのはどれか。\nア：PはRより高い　イ：RはPより高い",a:"ア",ex:"P > Q > R."},
+{sec:"math",lv:1,t:"推論（正誤）",q:"「Aさんは毎朝ジョギングをする」が正しいとき、必ず正しいのはどれか。\nア：今朝Aさんはジョギングをした　イ：Aさんは夜にはジョギングをしない",a:"ア",ex:"Đề không nói gì về buổi tối."},
+{sec:"math",lv:1,t:"表の読み取り（前月比）",q:"ある店の売上は4月200万円、5月250万円、6月300万円だった。5月の売上は前月比で何%増えたか。",a:"25%",ex:"50 ÷ 200."},
+{sec:"math",lv:1,t:"表の読み取り（平均）",q:"ある店の売上は4月200万円、5月250万円、6月300万円だった。3か月の平均売上はいくらか。",a:"250万円",ex:"750 ÷ 3."},
+{sec:"math",lv:1,t:"表の読み取り（倍率）",q:"店舗Aの客数は300人、店舗Bの客数は450人だった。Bの客数はAの何倍か。",a:"1.5倍",ex:"450 ÷ 300."},
+{sec:"math",lv:1,t:"表の読み取り（構成比）",q:"ある店の売上1,200万円のうち、18%がアプリ経由だった。アプリ経由の売上はいくらか。",a:"216万円",ex:"1,200 × 0.18.",tip:"12 × 18 = 216."},
+{sec:"math",lv:1,t:"平均",q:"4人の点数は60点、70点、80点、90点だった。平均点は何点か。",a:"75点",ex:"300 ÷ 4."},
+{sec:"math",lv:1,t:"平均（不足分）",q:"3回のテストの平均点は75点で、2回目までの平均点は70点だった。3回目の点数は何点か。",a:"85点",ex:"225 − 140."},
+{sec:"math",lv:1,t:"和差算",q:"兄と弟の所持金の合計は5,000円で、兄は弟より1,000円多い。弟の所持金はいくらか。",a:"2,000円",ex:"(5,000 − 1,000) ÷ 2."},
+{sec:"math",lv:1,t:"和差算",q:"AとBの体重の合計は110kgで、差は10kgである。重い方は何kgか。",a:"60kg",ex:"(110 + 10) ÷ 2."},
+// ----- Tiếng Anh – cơ bản -----
+{sec:"eng",lv:1,t:"同意語",q:"Closest in meaning to QUICK:\n(A) slow (B) fast (C) quiet (D) late (E) heavy",a:"(B) fast",ex:"quick = fast."},
+{sec:"eng",lv:1,t:"同意語",q:"Closest in meaning to REPLY:\n(A) ask (B) answer (C) call (D) send (E) read",a:"(B) answer",ex:"reply = answer."},
+{sec:"eng",lv:1,t:"同意語",q:"Closest in meaning to LARGE:\n(A) small (B) short (C) big (D) wide (E) long",a:"(C) big",ex:"large = big."},
+{sec:"eng",lv:1,t:"同意語",q:"Closest in meaning to CORRECT:\n(A) right (B) wrong (C) late (D) weak (E) busy",a:"(A) right",ex:"correct = right."},
+{sec:"eng",lv:1,t:"同意語",q:"Closest in meaning to ARRIVE AT:\n(A) leave (B) reach (C) depart (D) stay (E) wait",a:"(B) reach",ex:"arrive at = reach."},
+{sec:"eng",lv:1,t:"反意語",q:"Opposite in meaning to FULL:\n(A) empty (B) heavy (C) busy (D) open (E) whole",a:"(A) empty",ex:"full ↔ empty."},
+{sec:"eng",lv:1,t:"反意語",q:"Opposite in meaning to INCREASE:\n(A) raise (B) grow (C) decrease (D) add (E) rise",a:"(C) decrease",ex:"increase ↔ decrease.",tip:"Bốn từ còn lại đều mang nghĩa tăng."},
+{sec:"eng",lv:1,t:"反意語",q:"Opposite in meaning to ARRIVE:\n(A) reach (B) come (C) depart (D) stay (E) enter",a:"(C) depart",ex:"arrive ↔ depart."},
+{sec:"eng",lv:1,t:"反意語",q:"Opposite in meaning to BORROW:\n(A) lend (B) take (C) keep (D) buy (E) use",a:"(A) lend",ex:"borrow (mượn) ↔ lend (cho mượn)."},
+{sec:"eng",lv:1,t:"反意語",q:"Opposite in meaning to EASY:\n(A) simple (B) difficult (C) light (D) clear (E) plain",a:"(B) difficult",ex:"easy ↔ difficult."},
+{sec:"eng",lv:1,t:"英英辞書",q:"\"a place where you can borrow books\"\n(A) bookstore (B) library (C) museum (D) office (E) school",a:"(B) library",ex:"bookstore là nơi mua sách."},
+{sec:"eng",lv:1,t:"英英辞書",q:"\"a person who brings food to customers in a restaurant\"\n(A) chef (B) waiter (C) customer (D) cashier (E) owner",a:"(B) waiter",ex:"chef = đầu bếp."},
+{sec:"eng",lv:1,t:"英英辞書",q:"\"the money you get back when you pay more than the price\"\n(A) change (B) tip (C) fee (D) discount (E) salary",a:"(A) change",ex:"change = tiền thối."},
+{sec:"eng",lv:1,t:"英英辞書",q:"\"the meal you eat in the middle of the day\"\n(A) breakfast (B) lunch (C) dinner (D) snack (E) dessert",a:"(B) lunch",ex:"Bữa trưa."},
+{sec:"eng",lv:1,t:"英英辞書",q:"\"a piece of paper that shows what you bought and how much you paid\"\n(A) receipt (B) recipe (C) ticket (D) menu (E) coupon",a:"(A) receipt",ex:"receipt = hóa đơn.",tip:"recipe = công thức nấu ăn."},
+{sec:"eng",lv:1,t:"空欄補充（進行形）",q:"She ( ) TV when I called her.\n(A) watches (B) is watching (C) was watching (D) watched",a:"(C) was watching",ex:"Đang làm gì khi việc khác xảy ra trong quá khứ."},
+{sec:"eng",lv:1,t:"空欄補充（前置詞）",q:"I have lived here ( ) 2020.\n(A) for (B) since (C) from (D) during",a:"(B) since",ex:"since + mốc thời gian."},
+{sec:"eng",lv:1,t:"空欄補充（比較）",q:"This bag is ( ) than that one.\n(A) cheap (B) cheaper (C) cheapest (D) more cheap",a:"(B) cheaper",ex:"Có than → so sánh hơn."},
+{sec:"eng",lv:1,t:"空欄補充（動名詞）",q:"Would you mind ( ) the window?\n(A) open (B) to open (C) opening (D) opened",a:"(C) opening",ex:"mind + V-ing."},
+{sec:"eng",lv:1,t:"空欄補充（前置詞）",q:"The shop opens ( ) 10 a.m.\n(A) in (B) on (C) at (D) by",a:"(C) at",ex:"at + giờ."},
+{sec:"eng",lv:1,t:"誤文訂正",q:"She (A) don't (B) like (C) coffee (D) very much.",a:"(A) → doesn't",ex:"She → doesn't."},
+{sec:"eng",lv:1,t:"誤文訂正",q:"I (A) have seen (B) him (C) yesterday (D) at the station.",a:"(A) → saw",ex:"yesterday → quá khứ đơn, không dùng hiện tại hoàn thành."},
+{sec:"eng",lv:1,t:"誤文訂正",q:"There (A) are (B) a lot of (C) informations (D) on this website.",a:"(C) → information",ex:"information không đếm được, không thêm s. Kéo theo (A) → is."},
+{sec:"eng",lv:1,t:"誤文訂正",q:"He is (A) more taller (B) than (C) his (D) brother.",a:"(A) → taller",ex:"taller đã là so sánh hơn, không thêm more."},
+{sec:"eng",lv:1,t:"和文英訳",q:"「駅までどのくらい時間がかかりますか。」\n(A) How long does it take to get to the station?\n(B) How far does it take to the station?\n(C) How much does it take to the station?",a:"(A)",ex:"Hỏi thời gian: How long does it take."},
+{sec:"eng",lv:1,t:"和文英訳",q:"「この席は空いていますか。」\n(A) Is this seat taken?\n(B) Is this seat an empty person?\n(C) Does this seat free?",a:"(A)",ex:"Is this seat taken? = ghế này có ai ngồi chưa."},
+{sec:"eng",lv:1,t:"和文英訳",q:"「少々お待ちください。」\n(A) Please wait a moment.\n(B) Please wait few.\n(C) Please waiting a minute.",a:"(A)",ex:"wait a moment."},
+{sec:"eng",lv:1,t:"並べ替え",q:"[ you / can / help / me ] ?",a:"Can you help me?",ex:"Can + S + V."},
+{sec:"eng",lv:1,t:"並べ替え",q:"[ how / is / much / this / shirt ] ?",a:"How much is this shirt?",ex:"How much + is + S."},
+{sec:"eng",lv:1,t:"長文読解（広告）",q:"SALE: All T-shirts are 30% off this weekend only. Members get an extra 10% off at the register.\n\nWho gets an extra discount?\n(A) Everyone\n(B) Members\n(C) People who shop on weekdays",a:"(B)",ex:"\"Members get an extra 10% off\"."},
+// ----- 構造的把握力 – cơ bản -----
+{sec:"kozo",lv:1,t:"Quãng đường ÷ tốc độ",q:"ア：1個120円のりんごを5個買うといくらか。\nイ：60kmの道のりを時速30kmで走ると何時間かかるか。\nウ：200人の15%は何人か。\nエ：90kmの道のりを時速45kmで走ると何時間かかるか。"+KZ,a:"E（イとエ）",ex:"イ và エ: quãng đường ÷ tốc độ = thời gian."},
+{sec:"kozo",lv:1,t:"Giảm giá",q:"ア：定価5,000円の商品の2割引きの価格はいくらか。\nイ：30人の生徒の4割は何人か。\nウ：定価1,500円の商品の3割引きの価格はいくらか。\nエ：1,000円を2人で3:2に分けると多い方はいくらか。"+KZ,a:"B（アとウ）",ex:"ア và ウ: a × (1 − r). イ chỉ là a × r."},
+{sec:"kozo",lv:1,t:"Tăng theo tỉ lệ",q:"ア：原価に2割の利益を見込んで定価をつける。原価900円なら定価はいくらか。\nイ：今年の売上は昨年より15%増えた。昨年が400万円なら今年はいくらか。\nウ：ノート3冊（1冊150円）とペン2本（1本100円）の代金はいくらか。\nエ：1,000円を出して300円の品を2つ買うとおつりはいくらか。"+KZ,a:"A（アとイ）",ex:"ア và イ: a × (1 + r)."},
+{sec:"kozo",lv:1,t:"Chia đều",q:"ア：12,000円を3人で割り勘にすると1人いくらか。\nイ：時速40kmで3時間走ると何km進むか。\nウ：1,500円の5%はいくらか。\nエ：24個のお菓子を4人で同じ数ずつ分けると1人何個か。"+KZ,a:"C（アとエ）",ex:"ア và エ: tổng ÷ số người."},
+{sec:"kozo",lv:1,t:"和差算",q:"ア：3人の平均身長は160cmである。3人の身長の合計は何cmか。\nイ：2つの数の和は50、差は10である。大きい方の数はいくつか。\nウ：姉と妹の年齢の和は24歳、差は4歳である。姉は何歳か。\nエ：80の25%はいくつか。"+KZ,a:"D（イとウ）",ex:"イ và ウ: (tổng + hiệu) ÷ 2."},
+{sec:"kozo",lv:1,t:"Chia theo tỉ lệ",q:"ア：1,200円の3割はいくらか。\nイ：時速60kmで30分走ると何km進むか。\nウ：2,000円をAとBで3:2に分けると、Aはいくらか。\nエ：90個のみかんを兄と弟で4:5に分けると、弟は何個か。"+KZ,a:"F（ウとエ）",ex:"ウ và エ: tổng × phần / tổng số phần."},
+{sec:"kozo",lv:1,t:"Tìm giá gốc",q:"ア：定価1,000円の商品の2割引きはいくらか。\nイ：2割引きで800円だった商品の定価はいくらか。\nウ：1,000円の3割はいくらか。\nエ：3割引きで700円だった商品の定価はいくらか。"+KZ,a:"E（イとエ）",ex:"イ và エ: giá sau giảm ÷ (1 − r).",tip:"ア và イ dùng cùng con số nhưng một xuôi một ngược."},
+{sec:"kozo",lv:1,t:"Bao nhiêu lần",q:"ア：兄は1,500円、弟は500円持っている。兄は弟の何倍持っているか。\nイ：りんごは300円、みかんは120円である。差はいくらか。\nウ：2つの数の和は80で、一方は35である。もう一方はいくつか。\nエ：6mのテープと2mのテープがある。長い方は短い方の何倍か。"+KZ,a:"C（アとエ）",ex:"ア và エ: a ÷ b."},
+{sec:"kozo",lv:1,t:"Tỉ lệ của tỉ lệ",q:"ア：定価3,000円の2割引きはいくらか。\nイ：社員の60%が男性で、男性の半数が営業職である。男性の営業職は社員全体の何%か。\nウ：生徒の40%が電車通学で、そのうち25%が定期券を持っていない。定期券を持たない電車通学者は生徒全体の何%か。\nエ：分速80mで15分歩くと何m進むか。"+KZ,a:"D（イとウ）",ex:"イ và ウ: a × b (hai phần trăm nhân nhau)."},
+{sec:"kozo",lv:1,t:"Tốc độ × thời gian",q:"ア：900mを分速60mで歩くと何分かかるか。\nイ：120kmを2時間で走った。時速は何kmか。\nウ：時速4kmで2時間歩くと何km進むか。\nエ：分速50mで12分歩くと何m進むか。"+KZ,a:"F（ウとエ）",ex:"ウ và エ: tốc độ × thời gian. ア tìm thời gian, イ tìm tốc độ."},
+// ----- 組問題 – cơ bản -----
+{sec:"kumi",lv:1,t:"2問組（コンビニ）",q:"コンビニでおにぎりは1個130円、お茶は1本150円である。Aさんはおにぎり2個とお茶1本、Bさんはおにぎり3個を買った。\n\n問1　Aさんの支払額はいくらか。\n問2　Bさんの支払額はAさんより何円少ないか。",a:"問1 410円　問2 20円",ex:"A 260 + 150 = 410; B 390."},
+{sec:"kumi",lv:1,t:"2問組（まとめ買い）",q:"パン屋で食パンは1斤300円、ロールパンは1個80円である。ロールパンは5個以上買うと1個70円になる。\n\n問1　ロールパンを4個買うといくらか。\n問2　ロールパン6個と食パン1斤を買うといくらか。",a:"問1 320円　問2 720円",ex:"4 × 80; 6 × 70 + 300.",tip:"Câu 2 đủ 5 cái → giá 70."},
+{sec:"kumi",lv:1,t:"2問組（表）",q:"4月：来店客数1,000人、売上150万円\n5月：来店客数1,200人、売上168万円\n\n問1　4月の客単価はいくらか。\n問2　5月の来店客数は4月より何%増えたか。",a:"問1 1,500円　問2 20%",ex:"1,500,000 ÷ 1,000; 200 ÷ 1,000."},
+{sec:"kumi",lv:1,t:"2問組（電車）",q:"A駅からB駅までは12km、B駅からC駅までは18kmである。電車は時速60kmで走る（停車時間は考えない）。\n\n問1　A駅からB駅まで何分かかるか。\n問2　A駅からC駅まで何分かかるか。",a:"問1 12分　問2 30分",ex:"時速60km = 分速1km.",tip:"Thuộc: 時速60km → 1km/phút."},
+{sec:"kumi",lv:1,t:"2問組（割合）",q:"40人のクラスで、電車通学は25人、バス通学は10人、徒歩は5人である。\n\n問1　電車通学はクラスの何%か。\n問2　バス通学と徒歩の合計はクラスの何分の何か。",a:"問1 62.5%　問2 3/8",ex:"25 ÷ 40; 15 ÷ 40."},
+{sec:"kumi",lv:1,t:"2問組（ポイント）",q:"ある店では100円の買い物ごとに1ポイントがつき、1ポイントは1円として使える。\n\n問1　2,580円の買い物でつくポイントはいくつか。\n問2　500ポイントを使って1,200円の商品を買うと、支払額はいくらか。",a:"問1 25ポイント　問2 700円",ex:"2,580 ÷ 100 → 25 (bỏ phần lẻ); 1,200 − 500.",tip:"Phần lẻ dưới 100 yên không được tính."},
+{sec:"kumi",lv:1,t:"2問組（時給）",q:"アルバイトの時給は1,100円で、22時以降は25%増しになる。\n\n問1　22時以降の時給はいくらか。\n問2　18時から23時まで働いた日の給料はいくらか。",a:"問1 1,375円　問2 5,775円",ex:"1,100 × 1.25; 4 × 1,100 + 1 × 1,375."},
+{sec:"kumi",lv:1,t:"2問組（旅行）",q:"3人で旅行する。交通費は1人8,000円、宿泊費は3人で1部屋18,000円である。\n\n問1　宿泊費は1人あたりいくらか。\n問2　1人あたりの交通費と宿泊費の合計はいくらか。",a:"問1 6,000円　問2 14,000円",ex:"18,000 ÷ 3; 8,000 + 6,000."},
+// ----- 英語 書き換え – cơ bản -----
+{sec:"kaki",lv:1,t:"Hiện tại hoàn thành (kinh nghiệm)",q:"This is my first visit to Kyoto.\n→ I have ( 1 ) ( 2 ) to Kyoto before.\n\n語群：never / ever / been / gone / went / not",a:"(1) never　(2) been",ex:"have never been to = chưa từng đến."},
+{sec:"kaki",lv:1,t:"be good at",q:"She can speak English well.\n→ She is ( 1 ) ( 2 ) speaking English.\n\n語群：good / well / at / in / for / on",a:"(1) good　(2) at",ex:"be good at + V-ing."},
+{sec:"kaki",lv:1,t:"Rủ rê",q:"Let's go shopping.\n→ ( 1 ) ( 2 ) going shopping?\n\n語群：How / Who / about / for / with / Why",a:"(1) How　(2) about",ex:"How about + V-ing?"},
+{sec:"kaki",lv:1,t:"Hiện tại hoàn thành (kéo dài)",q:"He began to work here two years ago.\n→ He ( 1 ) ( 2 ) here for two years.\n\n語群：has / have / worked / working / work / was",a:"(1) has　(2) worked",ex:"Bắt đầu từ quá khứ, vẫn tiếp tục → has + p.p."},
+{sec:"kaki",lv:1,t:"no + danh từ",q:"I don't have a car.\n→ I ( 1 ) ( 2 ) car.\n\n語群：have / has / no / not / any / a",a:"(1) have　(2) no",ex:"have no + N = không có."},
+{sec:"kaki",lv:1,t:"So sánh nhất",q:"Ken is taller than any other boy in his class.\n→ Ken is ( 1 ) ( 2 ) boy in his class.\n\n語群：the / a / tallest / taller / most / more",a:"(1) the　(2) tallest",ex:"taller than any other = the tallest."},
+{sec:"kaki",lv:1,t:"must → have to",q:"Must I come tomorrow?\n→ ( 1 ) I ( 2 ) to come tomorrow?\n\n語群：Do / Does / have / has / must / am",a:"(1) Do　(2) have",ex:"Câu hỏi với have to: Do + S + have to."},
+{sec:"kaki",lv:1,t:"Bị động cảm xúc",q:"The news surprised me.\n→ I ( 1 ) ( 2 ) at the news.\n\n語群：was / were / surprised / surprising / am / surprise",a:"(1) was　(2) surprised",ex:"be surprised at."},
+{sec:"kaki",lv:1,t:"Cấm đoán",q:"Don't run in the store.\n→ You ( 1 ) ( 2 ) run in the store.\n\n語群：must / not / don't / have / to / are",a:"(1) must　(2) not",ex:"must not = không được."},
+{sec:"kaki",lv:1,t:"Danh từ → động từ",q:"He is a good swimmer.\n→ He ( 1 ) ( 2 ).\n\n語群：swims / swim / well / good / fast / much",a:"(1) swims　(2) well",ex:"good + danh từ ↔ động từ + well."},
+{sec:"kaki",lv:1,t:"too … to → so … that",q:"I am too tired to walk.\n→ I am ( 1 ) tired ( 2 ) I can't walk.\n\n語群：so / too / that / than / very / as",a:"(1) so　(2) that",ex:"too … to = so … that + S + can't."},
+{sec:"kaki",lv:1,t:"Đại từ sở hữu",q:"This book is mine.\n→ This is ( 1 ) ( 2 ).\n\n語群：my / mine / book / books / me / I",a:"(1) my　(2) book",ex:"mine = my book."}
+];
+Q.forEach((x, i) => x.id = x.sec + "-" + x.lv + "-" + i);
+
+// ---------- state ----------
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+};
+let marks = store.get("spi-marks", {});
+let st = Object.assign({ secs: Object.keys(SECS), lvs: [1, 2, 3], timer: false, shuffle: false, wrong: false }, store.get("spi-opts", {}));
+let list = [], pos = 0, revealed = false, draft = "", tHandle = null, tLeft = 60;
+let order = Q.map((_, i) => i);
+
+const $ = id => document.getElementById(id);
+function saveOpts() { store.set("spi-opts", { secs: st.secs, lvs: st.lvs, timer: st.timer, shuffle: st.shuffle, wrong: st.wrong }); }
+
+function buildChips() {
+  const secRow = $("secRow"), lvRow = $("lvRow");
+  Object.entries(SECS).forEach(([k, v]) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = v;
+    b.setAttribute("aria-pressed", st.secs.includes(k));
+    b.onclick = () => { toggle(st.secs, k); b.setAttribute("aria-pressed", st.secs.includes(k)); rebuild(); };
+    secRow.appendChild(b);
+  });
+  Object.entries(LVS).forEach(([k, v]) => {
+    const n = +k, b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = v;
+    b.setAttribute("aria-pressed", st.lvs.includes(n));
+    b.onclick = () => { toggle(st.lvs, n); b.setAttribute("aria-pressed", st.lvs.includes(n)); rebuild(); };
+    lvRow.appendChild(b);
+  });
+  $("optTimer").checked = st.timer; $("optShuffle").checked = st.shuffle; $("optWrong").checked = st.wrong;
+  $("optTimer").onchange = e => { st.timer = e.target.checked; if (!st.timer) stopTimer(); tLeft = 60; saveOpts(); render(); };
+  $("optShuffle").onchange = e => { st.shuffle = e.target.checked; reshuffle(); rebuild(); };
+  $("optWrong").onchange = e => { st.wrong = e.target.checked; rebuild(); };
+}
+function toggle(arr, v) { const i = arr.indexOf(v); i >= 0 ? arr.splice(i, 1) : arr.push(v); }
+function reshuffle() {
+  order = Q.map((_, i) => i);
+  if (st.shuffle) for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [order[i], order[j]] = [order[j], order[i]]; }
+}
+function rebuild() {
+  saveOpts();
+  list = order.map(i => Q[i]).filter(x => st.secs.includes(x.sec) && st.lvs.includes(x.lv) && (!st.wrong || marks[x.id] === "bad"));
+  pos = 0; resetCard(); render();
+}
+function resetCard() { revealed = false; draft = ""; stopTimer(); tLeft = 60; }
+
+function stopTimer() { if (tHandle) { clearInterval(tHandle); tHandle = null; } }
+function startTimer() {
+  stopTimer(); tLeft = 60;
+  tHandle = setInterval(() => {
+    tLeft--; const el = $("timer");
+    if (el) { el.textContent = fmt(tLeft); el.classList.toggle("low", tLeft <= 10); }
+    if (tLeft <= 0) { stopTimer(); reveal(true); }
+  }, 1000);
+}
+function fmt(s) { return (s < 0 ? 0 : s) + " giây"; }
+
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+function render() {
+  if (mode === "exam") return renderExam();
+  const card = $("card"); card.innerHTML = "";
+  renderScore();
+  renderDots();
+  $("prevBtn").disabled = pos <= 0; $("nextBtn").disabled = pos >= list.length - 1;
+  if (!list.length) {
+    card.appendChild(el("div", "empty", st.wrong ? "Chưa có câu nào bị đánh dấu sai trong phần đã chọn." : "Chọn ít nhất một phần và một mức để bắt đầu."));
+    return;
+  }
+  const x = list[pos];
+  const band = el("div", "band");
+  const sec = el("span", "sec", SECS[x.sec]);
+  sec.appendChild(el("span", "lv", LVS[x.lv]));
+  band.appendChild(sec);
+  const meta = el("span", "meta", (pos + 1) + " / " + list.length);
+  band.appendChild(meta);
+  card.appendChild(band);
+
+  const body = el("div", "body");
+  const top = el("div"); top.style.cssText = "display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap";
+  top.appendChild(el("div", "qtitle", x.t));
+  if (st.timer && !revealed) { const t = el("div", "timer", fmt(tLeft)); t.id = "timer"; top.appendChild(t); }
+  body.appendChild(top);
+  const isEn = x.sec === "eng" || x.sec === "kaki";
+  body.appendChild(el("div", "q" + (isEn ? " en" : ""), x.q));
+
+  const ans = el("div", "answer");
+  const lab = el("label", null, "Câu trả lời của bạn"); lab.htmlFor = "ansBox";
+  const ta = document.createElement("textarea"); ta.id = "ansBox"; ta.value = draft; ta.disabled = revealed;
+  ta.placeholder = "Gõ đáp án, ví dụ: 138枚 hoặc B";
+  ta.oninput = () => { draft = ta.value; $("checkBtn").disabled = !draft.trim(); };
+  ta.onkeydown = e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (draft.trim()) reveal(false); } };
+  ans.appendChild(lab); ans.appendChild(ta);
+  if (!revealed) {
+    const btns = el("div", "btns");
+    const go = el("button", "main", "Xem đáp án"); go.type = "button"; go.id = "checkBtn"; go.disabled = !draft.trim();
+    go.onclick = () => reveal(false);
+    const skip = el("button", "sub", "Bỏ qua, xem luôn"); skip.type = "button"; skip.onclick = () => reveal(true);
+    btns.appendChild(go); btns.appendChild(skip);
+    ans.appendChild(btns);
+    ans.appendChild(el("div", "hint", "Enter để nộp, Shift+Enter để xuống dòng."));
+  }
+  body.appendChild(ans);
+
+  if (revealed) {
+    const r = el("div", "reveal");
+    if (draft.trim()) r.appendChild(el("div", "yours", "Bạn trả lời: " + draft.trim()));
+    else r.appendChild(el("div", "yours", tLeft <= 0 && st.timer ? "Hết giờ, chưa trả lời." : "Bạn chưa trả lời."));
+    const a = el("div", "ans"); a.appendChild(document.createTextNode("Đáp án: ")); a.appendChild(el("span", null, x.a)); r.appendChild(a);
+    const b1 = el("div", "block"); b1.appendChild(el("h3", null, "Giải thích")); b1.appendChild(el("p", null, x.ex)); r.appendChild(b1);
+    if (x.tip) { const b2 = el("div", "block"); b2.appendChild(el("h3", null, "Đoán nhanh")); b2.appendChild(el("p", null, x.tip)); r.appendChild(b2); }
+    const sm = el("div", "selfmark"); sm.appendChild(el("span", null, "Bạn làm đúng không?"));
+    const ok = el("button", "sub ok", "Đúng"), bad = el("button", "sub bad", "Sai");
+    ok.type = bad.type = "button";
+    ok.setAttribute("aria-pressed", marks[x.id] === "ok"); bad.setAttribute("aria-pressed", marks[x.id] === "bad");
+    ok.onclick = () => mark(x, "ok"); bad.onclick = () => mark(x, "bad");
+    sm.appendChild(ok); sm.appendChild(bad); r.appendChild(sm);
+    body.appendChild(r);
+  }
+  card.appendChild(body);
+  if (!revealed) { ta.focus({ preventScroll: true }); if (st.timer && !tHandle) startTimer(); }
+}
+function reveal(skip) { stopTimer(); revealed = true; render(); }
+function mark(x, v) {
+  marks[x.id] = v; store.set("spi-marks", marks);
+  if (pos < list.length - 1 && !st.wrong) { pos++; resetCard(); }
+  render();
+}
+function renderScore() {
+  const ids = list.map(x => x.id);
+  const ok = ids.filter(i => marks[i] === "ok").length, bad = ids.filter(i => marks[i] === "bad").length;
+  $("score").innerHTML = "";
+  const s = $("score");
+  s.append("Đúng ", Object.assign(document.createElement("b"), { textContent: ok }), " · Sai ", Object.assign(document.createElement("b"), { textContent: bad }), " · Chưa làm ", Object.assign(document.createElement("b"), { textContent: ids.length - ok - bad }));
+}
+function renderDots() {
+  const d = $("dots"); d.innerHTML = "";
+  if (list.length > 80) return;
+  list.forEach((x, i) => {
+    const b = el("button", "dot" + (i === pos ? " cur" : "") + (marks[x.id] ? " " + marks[x.id] : ""));
+    b.type = "button"; b.title = (i + 1) + ". " + x.t; b.setAttribute("aria-label", "Câu " + (i + 1));
+    b.onclick = () => { pos = i; resetCard(); render(); };
+    d.appendChild(b);
+  });
+}
+$("prevBtn").onclick = () => { if (pos > 0) { pos--; resetCard(); render(); } };
+$("nextBtn").onclick = () => { if (pos < list.length - 1) { pos++; resetCard(); render(); } };
+let confirmReset = false;
+$("resetBtn").onclick = e => {
+  if (!confirmReset) { confirmReset = true; e.target.textContent = "Bấm lần nữa để xoá"; setTimeout(() => { confirmReset = false; e.target.textContent = "Xoá kết quả"; }, 3000); return; }
+  marks = {}; store.set("spi-marks", marks); confirmReset = false; e.target.textContent = "Xoá kết quả"; rebuild();
+};
+
+// ================= THI THỬ =================
+let mode = "practice";
+let ex = null;
+const SEC_ORDER = ["math", "kozo", "kumi", "eng", "kaki"];
+const subCount = x => (x.q.match(/^問\d/gm) || []).length || 1;
+let exOpts = Object.assign({ count: 20, secs: 60, mix: 70 }, store.get("spi-exam-opts", {}));
+const MIXES = { 70: [0.7, 0.2, 0.1], 60: [0.6, 0.3, 0.1], 0: null };
+function planCounts(p, n) {
+  const mix = MIXES[exOpts.mix];
+  const lvs = [1, 2, 3].filter(l => st.lvs.includes(l));
+  if (!mix || !lvs.length) return null;
+  const w = lvs.map(l => mix[l - 1]), ws = w.reduce((a, b) => a + b, 0);
+  const raw = w.map(x => x / ws * n), tgt = raw.map(Math.floor);
+  let rem = n - tgt.reduce((a, b) => a + b, 0);
+  raw.map((r, i) => [r - Math.floor(r), i]).sort((a, b) => b[0] - a[0]).forEach(([, i]) => { if (rem > 0) { tgt[i]++; rem--; } });
+  return lvs.map((l, i) => [l, tgt[i]]);
+}
+function pickExam() {
+  const p = shuffled(pool()), n = Math.min(exOpts.count, p.length);
+  const plan = planCounts(p, n);
+  if (!plan) return p.slice(0, n);
+  const used = new Set(); let out = [];
+  plan.forEach(([l, k]) => { const c = p.filter(x => x.lv === l).slice(0, k); c.forEach(x => used.add(x)); out = out.concat(c); });
+  if (out.length < n) out = out.concat(p.filter(x => !used.has(x)).slice(0, n - out.length));
+  return out;
+}
+
+function pool() { return Q.filter(x => st.secs.includes(x.sec) && st.lvs.includes(x.lv)); }
+function shuffled(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function norm(s) { return (s || "").normalize("NFKC").toLowerCase().replace(/[\s()、,。.:：・→]/g, ""); }
+function nums(s) { return ((s || "").normalize("NFKC").replace(/問\d|[(]\d[)]/g, "").replace(/,/g, "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) || []); }
+function guess(u, k) {
+  if (!u || !u.trim()) return "bad";
+  if (norm(u) === norm(k)) return "ok";
+  const lm = k.normalize("NFKC").match(/^\(?([a-h])\)?(?:[\s(]|$)/i);
+  if (lm && norm(u) === lm[1].toLowerCase()) return "ok";
+  const a = nums(u), b = nums(k);
+  if (b.length && a.length === b.length) return a.every((v, i) => v === b[i]) ? "ok" : "bad";
+  return null;
+}
+
+function setMode(m) {
+  if (ex && ex.handle) { clearInterval(ex.handle); ex.handle = null; }
+  if (mode === "exam" && ex && !ex.done) ex = null;
+  mode = m; stopTimer(); resetCard();
+  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b.dataset.m === m));
+  $("practiceTools").hidden = m !== "practice";
+  document.querySelector("nav").hidden = m !== "practice";
+  rebuild();
+}
+
+function renderExam() {
+  const card = $("card"); card.innerHTML = "";
+  $("filtersBox").hidden = !!(ex && !ex.done);
+  if (!ex) return renderSetup(card);
+  if (ex.done) return renderResults(card);
+  renderExamQ(card);
+}
+
+function renderSetup(card) {
+  const p = pool();
+  $("score").textContent = "Kho đề: " + Q.length + " câu";
+  const band = el("div", "band"); band.appendChild(el("span", "sec", "模擬試験")); band.appendChild(el("span", "meta", "Thi thử")); card.appendChild(band);
+  const body = el("div", "body");
+  body.appendChild(el("p", "note", "Đề rút ngẫu nhiên từ các phần và mức đang chọn ở trên, xếp theo thứ tự 非言語 → 構造的把握力 → 組問題 → 英語 như đề thật. Mỗi câu có giờ riêng, hết giờ tự sang câu sau và không quay lại được. 組問題 được nhân thời gian theo số câu hỏi con."));
+  const setup = el("div", "setup");
+  const mk = (id, label, opts, val, onch) => {
+    const f = el("div", "field"); const l = el("label", null, label); l.htmlFor = id;
+    const s = document.createElement("select"); s.id = id;
+    opts.forEach(([v, t]) => { const o = document.createElement("option"); o.value = v; o.textContent = t; if (+v === val) o.selected = true; s.appendChild(o); });
+    s.onchange = () => { onch(+s.value); store.set("spi-exam-opts", exOpts); render(); };
+    f.appendChild(l); f.appendChild(s); return f;
+  };
+  setup.appendChild(mk("exCount", "Số câu", [[10, "10 câu"], [20, "20 câu"], [30, "30 câu"], [40, "40 câu"]], exOpts.count, v => exOpts.count = v));
+  setup.appendChild(mk("exSecs", "Thời gian mỗi câu", [[45, "45 giây"], [60, "60 giây"], [90, "90 giây"]], exOpts.secs, v => exOpts.secs = v));
+  setup.appendChild(mk("exMix", "Tỉ lệ dễ / TB / khó", [[70, "70 / 20 / 10"], [60, "60 / 30 / 10"], [0, "Theo tỉ lệ của kho"]], exOpts.mix, v => exOpts.mix = v));
+  body.appendChild(setup);
+  const n = Math.min(exOpts.count, p.length);
+  const est = Math.round(shuffledEst(p, n) / 60);
+  const byLv = [1, 2, 3].map(l => p.filter(x => x.lv === l).length);
+  const plan = planCounts(p, n);
+  const planTxt = plan ? " Dự kiến: " + plan.map(([l, k]) => k + " " + LVS[l].toLowerCase()).join(", ") + "." : "";
+  body.appendChild(el("p", "note", p.length ? ("Có " + p.length + " câu phù hợp (" + byLv[0] + " cơ bản, " + byLv[1] + " trung bình, " + byLv[2] + " khó). Đề gồm " + n + " câu, khoảng " + est + " phút." + planTxt) : "Chưa có câu nào phù hợp. Chọn ít nhất một phần và một mức."));
+  const btns = el("div", "btns");
+  const go = el("button", "main", "Bắt đầu thi"); go.type = "button"; go.disabled = !p.length; go.onclick = startExam;
+  btns.appendChild(go); body.appendChild(btns);
+  card.appendChild(body);
+}
+function shuffledEst(p, n) { if (!p.length) return 0; const avg = p.reduce((s, x) => s + subCount(x), 0) / p.length; return avg * n * exOpts.secs; }
+
+function startExam() {
+  const pick = pickExam();
+  pick.sort((a, b) => SEC_ORDER.indexOf(a.sec) - SEC_ORDER.indexOf(b.sec));
+  ex = { items: pick, i: 0, ans: [], marks: [], done: false, left: 0, total: 0, handle: null };
+  startQ();
+}
+function startQ() {
+  const x = ex.items[ex.i];
+  draft = ""; ex.total = ex.left = exOpts.secs * subCount(x);
+  if (ex.handle) clearInterval(ex.handle);
+  ex.handle = setInterval(() => {
+    ex.left--;
+    const t = $("exTimer"), b = $("exTimeBar");
+    if (t) { t.textContent = ex.left + " giây"; t.classList.toggle("low", ex.left <= 10); }
+    if (b) { b.firstChild.style.width = Math.max(0, ex.left / ex.total * 100) + "%"; b.classList.toggle("low", ex.left <= 10); }
+    if (ex.left <= 0) nextQ();
+  }, 1000);
+  render();
+}
+function nextQ() {
+  ex.ans[ex.i] = draft.trim();
+  clearInterval(ex.handle); ex.handle = null;
+  ex.i++;
+  if (ex.i >= ex.items.length) { ex.done = true; ex.marks = ex.items.map((x, i) => guess(ex.ans[i], x.a)); render(); window.scrollTo(0, 0); }
+  else startQ();
+}
+
+let confirmStop = false;
+function renderExamQ(card) {
+  const x = ex.items[ex.i], N = ex.items.length;
+  $("score").textContent = "Câu " + (ex.i + 1) + " / " + N;
+  const prog = el("div", "bar"); const pi = document.createElement("i"); pi.style.width = (ex.i / N * 100) + "%"; prog.appendChild(pi); card.appendChild(prog);
+  const band = el("div", "band");
+  band.appendChild(el("span", "sec", SECS[x.sec]));
+  const t = el("span", "bigtimer" + (ex.left <= 10 ? " low" : ""), ex.left + " giây"); t.id = "exTimer"; band.appendChild(t);
+  card.appendChild(band);
+  const tb = el("div", "bar time" + (ex.left <= 10 ? " low" : "")); tb.id = "exTimeBar"; const ti = document.createElement("i"); ti.style.width = (ex.left / ex.total * 100) + "%"; tb.appendChild(ti); card.appendChild(tb);
+
+  const body = el("div", "body");
+  const isEn = x.sec === "eng" || x.sec === "kaki";
+  body.appendChild(el("div", "q" + (isEn ? " en" : ""), x.q));
+  const ans = el("div", "answer");
+  const lab = el("label", null, "Câu trả lời"); lab.htmlFor = "exAns";
+  const ta = document.createElement("textarea"); ta.id = "exAns"; ta.value = draft;
+  ta.placeholder = subCount(x) > 1 ? "Ví dụ: 問1 60円 問2 400円" : "Gõ đáp án";
+  ta.oninput = () => { draft = ta.value; };
+  ta.onkeydown = e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); nextQ(); } };
+  ans.appendChild(lab); ans.appendChild(ta);
+  const btns = el("div", "btns");
+  const nx = el("button", "main", ex.i === N - 1 ? "Nộp bài" : "Câu tiếp"); nx.type = "button"; nx.onclick = nextQ;
+  const stop = el("button", "sub", "Dừng thi"); stop.type = "button";
+  stop.onclick = () => {
+    if (!confirmStop) { confirmStop = true; stop.textContent = "Bấm lần nữa để dừng"; setTimeout(() => { confirmStop = false; if (stop.isConnected) stop.textContent = "Dừng thi"; }, 3000); return; }
+    confirmStop = false; clearInterval(ex.handle); ex = null; render();
+  };
+  btns.appendChild(nx); btns.appendChild(stop); ans.appendChild(btns);
+  ans.appendChild(el("div", "hint", "Enter để sang câu tiếp. Không quay lại được câu trước."));
+  body.appendChild(ans);
+  card.appendChild(body);
+  ta.focus({ preventScroll: true });
+}
+
+function renderResults(card) {
+  $("score").textContent = "Đã nộp bài";
+  const band = el("div", "band"); band.appendChild(el("span", "sec", "Kết quả thi thử")); band.appendChild(el("span", "meta", ex.items.length + " câu")); card.appendChild(band);
+  const body = el("div", "body");
+  const sum = el("div", "sum"); sum.id = "exSum"; body.appendChild(sum);
+  body.appendChild(el("p", "note", "Máy tự chấm những câu khớp rõ với đáp án và câu bỏ trống. Câu ghi \"Chưa chấm\" thì bạn so đáp án rồi bấm Đúng hoặc Sai."));
+  const tw = el("div", "tbl-wrap"); tw.id = "exTbl"; body.appendChild(tw);
+
+  const items = el("div", "items");
+  ex.items.forEach((x, i) => {
+    const it = el("div", "item");
+    const head = el("div", "head");
+    const hl = el("span"); hl.appendChild(el("b", null, (i + 1) + ". " + SECS[x.sec])); hl.appendChild(document.createTextNode(" · " + x.t + " · " + LVS[x.lv]));
+    const state = el("span", "state"); state.id = "st" + i;
+    head.appendChild(hl); head.appendChild(state); it.appendChild(head);
+    const d = document.createElement("details"); d.appendChild(el("summary", null, "Xem đề"));
+    d.appendChild(el("div", "q" + (x.sec === "eng" || x.sec === "kaki" ? " en" : ""), x.q)); it.appendChild(d);
+    const yl = el("div", "line"); yl.appendChild(el("em", null, "Bạn: ")); yl.appendChild(document.createTextNode(ex.ans[i] || "(bỏ trống)")); it.appendChild(yl);
+    const al = el("div", "line"); al.appendChild(el("em", null, "Đáp án: ")); const as = el("span", null, x.a); as.style.background = "var(--mark)"; as.style.padding = "1px 4px"; al.appendChild(as); it.appendChild(al);
+    const exl = el("div", "line"); exl.appendChild(el("em", null, "Giải thích: ")); exl.appendChild(document.createTextNode(x.ex)); it.appendChild(exl);
+    if (x.tip) { const tl = el("div", "line"); tl.appendChild(el("em", null, "Đoán nhanh: ")); tl.appendChild(document.createTextNode(x.tip)); it.appendChild(tl); }
+    const sm = el("div", "selfmark");
+    const ok = el("button", "sub ok", "Đúng"), bad = el("button", "sub bad", "Sai"); ok.type = bad.type = "button";
+    ok.id = "ok" + i; bad.id = "bad" + i;
+    ok.onclick = () => { ex.marks[i] = "ok"; refreshResults(); };
+    bad.onclick = () => { ex.marks[i] = "bad"; refreshResults(); };
+    sm.appendChild(ok); sm.appendChild(bad); it.appendChild(sm);
+    items.appendChild(it);
+  });
+  body.appendChild(items);
+
+  const btns = el("div", "btns");
+  const save = el("button", "main", "Lưu kết quả vào phần luyện tập"); save.type = "button"; save.id = "exSave";
+  save.onclick = () => {
+    ex.items.forEach((x, i) => { if (ex.marks[i]) marks[x.id] = ex.marks[i]; });
+    store.set("spi-marks", marks); save.textContent = "Đã lưu — dùng \"Chỉ câu đã sai\" để ôn lại"; save.disabled = true;
+  };
+  const again = el("button", "sub", "Thi đề mới"); again.type = "button"; again.onclick = () => { ex = null; render(); window.scrollTo(0, 0); };
+  btns.appendChild(save); btns.appendChild(again);
+  body.appendChild(btns);
+  card.appendChild(body);
+  refreshResults();
+}
+
+function refreshResults() {
+  const N = ex.items.length;
+  const ok = ex.marks.filter(m => m === "ok").length, bad = ex.marks.filter(m => m === "bad").length, none = N - ok - bad;
+  const sum = $("exSum"); sum.innerHTML = "";
+  const big = el("div", "big"); big.appendChild(document.createTextNode(ok)); big.appendChild(el("small", null, " / " + N + " đúng"));
+  sum.appendChild(big);
+  sum.appendChild(el("span", "note", "Sai " + bad + " · Chưa chấm " + none + (none ? "" : " · Tỉ lệ đúng " + Math.round(ok / N * 100) + "%")));
+  const tw = $("exTbl"); tw.innerHTML = "";
+  const tbl = el("table", "res"); const tr0 = document.createElement("tr");
+  ["Phần", "Số câu", "Đúng", "Sai", "Chưa chấm"].forEach(h => tr0.appendChild(el("th", null, h))); tbl.appendChild(tr0);
+  SEC_ORDER.forEach(s => {
+    const idx = ex.items.map((x, i) => x.sec === s ? i : -1).filter(i => i >= 0);
+    if (!idx.length) return;
+    const o = idx.filter(i => ex.marks[i] === "ok").length, b = idx.filter(i => ex.marks[i] === "bad").length;
+    const tr = document.createElement("tr");
+    [SECS[s], idx.length, o, b, idx.length - o - b].forEach(v => tr.appendChild(el("td", null, String(v))));
+    tbl.appendChild(tr);
+  });
+  tw.appendChild(tbl);
+  ex.items.forEach((x, i) => {
+    const m = ex.marks[i], s = $("st" + i);
+    s.className = "state " + (m || "none"); s.textContent = m === "ok" ? "Đúng" : m === "bad" ? "Sai" : "Chưa chấm";
+    $("ok" + i).setAttribute("aria-pressed", m === "ok"); $("bad" + i).setAttribute("aria-pressed", m === "bad");
+  });
+  const sv = $("exSave"); if (sv && sv.disabled) { sv.disabled = false; sv.textContent = "Lưu kết quả vào phần luyện tập"; }
+}
+
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => { if (b.dataset.m !== mode) setMode(b.dataset.m); });
+
+buildChips(); reshuffle(); rebuild();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+}
+</script>
+</body>
+</html>
